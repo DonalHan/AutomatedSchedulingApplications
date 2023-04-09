@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "ie.nci.distributedsystems.task_management_service";
+option java_outer_classname = "TaskManagement";
+package taskmanagementservice;
+
+import "google/protobuf/timestamp.proto";
+
+service TaskManagementService
+{
+  rpc AddTask(AddTaskRequest) returns (AddTaskResponse);
+  rpc GetTasksByDate(GetTasksByDateRequest) returns (stream Task);
+}
+
+message Task
+{
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  google.protobuf.Timestamp due_date = 4;
+  string assigned_user = 5;
+}
+
+message AddTaskRequest
+{
+  Task task = 1;
+}
+
+message AddTaskResponse
+{
+  string task_id = 1;
+}
+
+message GetTasksByDateRequest
+{
+  google.protobuf.Timestamp date = 1;
+}
