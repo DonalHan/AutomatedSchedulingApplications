@@ -8,12 +8,7 @@ public interface AddTaskResponseOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string task_id = 1;</code>
+   * <code>int32 task_id = 1;</code>
    */
-  java.lang.String getTaskId();
-  /**
-   * <code>string task_id = 1;</code>
-   */
-  com.google.protobuf.ByteString
-      getTaskIdBytes();
+  int getTaskId();
 }

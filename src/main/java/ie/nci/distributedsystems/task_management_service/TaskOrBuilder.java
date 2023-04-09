@@ -8,14 +8,9 @@ public interface TaskOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string id = 1;</code>
+   * <code>int32 id = 1;</code>
    */
-  java.lang.String getId();
-  /**
-   * <code>string id = 1;</code>
-   */
-  com.google.protobuf.ByteString
-      getIdBytes();
+  int getId();
 
   /**
    * <code>string name = 2;</code>
@@ -38,17 +33,17 @@ public interface TaskOrBuilder extends
       getDescriptionBytes();
 
   /**
-   * <code>.google.protobuf.Timestamp due_date = 4;</code>
+   * <code>.taskmanagementservice.Date due_date = 4;</code>
    */
   boolean hasDueDate();
   /**
-   * <code>.google.protobuf.Timestamp due_date = 4;</code>
+   * <code>.taskmanagementservice.Date due_date = 4;</code>
    */
-  com.google.protobuf.Timestamp getDueDate();
+  ie.nci.distributedsystems.task_management_service.Date getDueDate();
   /**
-   * <code>.google.protobuf.Timestamp due_date = 4;</code>
+   * <code>.taskmanagementservice.Date due_date = 4;</code>
    */
-  com.google.protobuf.TimestampOrBuilder getDueDateOrBuilder();
+  ie.nci.distributedsystems.task_management_service.DateOrBuilder getDueDateOrBuilder();
 
   /**
    * <code>string assigned_user = 5;</code>

@@ -43,11 +43,11 @@ private static final long serialVersionUID = 0L;
             done = true;
             break;
           case 10: {
-            com.google.protobuf.Timestamp.Builder subBuilder = null;
+            ie.nci.distributedsystems.task_management_service.Date.Builder subBuilder = null;
             if (date_ != null) {
               subBuilder = date_.toBuilder();
             }
-            date_ = input.readMessage(com.google.protobuf.Timestamp.parser(), extensionRegistry);
+            date_ = input.readMessage(ie.nci.distributedsystems.task_management_service.Date.parser(), extensionRegistry);
             if (subBuilder != null) {
               subBuilder.mergeFrom(date_);
               date_ = subBuilder.buildPartial();
@@ -88,23 +88,23 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int DATE_FIELD_NUMBER = 1;
-  private com.google.protobuf.Timestamp date_;
+  private ie.nci.distributedsystems.task_management_service.Date date_;
   /**
-   * <code>.google.protobuf.Timestamp date = 1;</code>
+   * <code>.taskmanagementservice.Date date = 1;</code>
    */
   public boolean hasDate() {
     return date_ != null;
   }
   /**
-   * <code>.google.protobuf.Timestamp date = 1;</code>
+   * <code>.taskmanagementservice.Date date = 1;</code>
    */
-  public com.google.protobuf.Timestamp getDate() {
-    return date_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : date_;
+  public ie.nci.distributedsystems.task_management_service.Date getDate() {
+    return date_ == null ? ie.nci.distributedsystems.task_management_service.Date.getDefaultInstance() : date_;
   }
   /**
-   * <code>.google.protobuf.Timestamp date = 1;</code>
+   * <code>.taskmanagementservice.Date date = 1;</code>
    */
-  public com.google.protobuf.TimestampOrBuilder getDateOrBuilder() {
+  public ie.nci.distributedsystems.task_management_service.DateOrBuilder getDateOrBuilder() {
     return getDate();
   }
 
@@ -424,29 +424,29 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private com.google.protobuf.Timestamp date_ = null;
+    private ie.nci.distributedsystems.task_management_service.Date date_ = null;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> dateBuilder_;
+        ie.nci.distributedsystems.task_management_service.Date, ie.nci.distributedsystems.task_management_service.Date.Builder, ie.nci.distributedsystems.task_management_service.DateOrBuilder> dateBuilder_;
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
     public boolean hasDate() {
       return dateBuilder_ != null || date_ != null;
     }
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
-    public com.google.protobuf.Timestamp getDate() {
+    public ie.nci.distributedsystems.task_management_service.Date getDate() {
       if (dateBuilder_ == null) {
-        return date_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : date_;
+        return date_ == null ? ie.nci.distributedsystems.task_management_service.Date.getDefaultInstance() : date_;
       } else {
         return dateBuilder_.getMessage();
       }
     }
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
-    public Builder setDate(com.google.protobuf.Timestamp value) {
+    public Builder setDate(ie.nci.distributedsystems.task_management_service.Date value) {
       if (dateBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -460,10 +460,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
     public Builder setDate(
-        com.google.protobuf.Timestamp.Builder builderForValue) {
+        ie.nci.distributedsystems.task_management_service.Date.Builder builderForValue) {
       if (dateBuilder_ == null) {
         date_ = builderForValue.build();
         onChanged();
@@ -474,13 +474,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
-    public Builder mergeDate(com.google.protobuf.Timestamp value) {
+    public Builder mergeDate(ie.nci.distributedsystems.task_management_service.Date value) {
       if (dateBuilder_ == null) {
         if (date_ != null) {
           date_ =
-            com.google.protobuf.Timestamp.newBuilder(date_).mergeFrom(value).buildPartial();
+            ie.nci.distributedsystems.task_management_service.Date.newBuilder(date_).mergeFrom(value).buildPartial();
         } else {
           date_ = value;
         }
@@ -492,7 +492,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
     public Builder clearDate() {
       if (dateBuilder_ == null) {
@@ -506,33 +506,33 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
-    public com.google.protobuf.Timestamp.Builder getDateBuilder() {
+    public ie.nci.distributedsystems.task_management_service.Date.Builder getDateBuilder() {
       
       onChanged();
       return getDateFieldBuilder().getBuilder();
     }
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
-    public com.google.protobuf.TimestampOrBuilder getDateOrBuilder() {
+    public ie.nci.distributedsystems.task_management_service.DateOrBuilder getDateOrBuilder() {
       if (dateBuilder_ != null) {
         return dateBuilder_.getMessageOrBuilder();
       } else {
         return date_ == null ?
-            com.google.protobuf.Timestamp.getDefaultInstance() : date_;
+            ie.nci.distributedsystems.task_management_service.Date.getDefaultInstance() : date_;
       }
     }
     /**
-     * <code>.google.protobuf.Timestamp date = 1;</code>
+     * <code>.taskmanagementservice.Date date = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        ie.nci.distributedsystems.task_management_service.Date, ie.nci.distributedsystems.task_management_service.Date.Builder, ie.nci.distributedsystems.task_management_service.DateOrBuilder> 
         getDateFieldBuilder() {
       if (dateBuilder_ == null) {
         dateBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>(
+            ie.nci.distributedsystems.task_management_service.Date, ie.nci.distributedsystems.task_management_service.Date.Builder, ie.nci.distributedsystems.task_management_service.DateOrBuilder>(
                 getDate(),
                 getParentForChildren(),
                 isClean());
