@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "ie.nci.distributedsystems.task_deletion_service";
+option java_outer_classname = "TaskDeletion";
+package taskdeletionservice;
+
+
+// Add the Task Deletion Service definition-----
+service TaskDeletionService
+{
+  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse);
+  rpc DeleteTasks(stream DeleteTasksRequest) returns (DeleteTaskResponse);
+}
+
+// Add the message definitions------------------
+message DeleteTaskRequest
+{
+  int32 task_id = 1;
+}
+
+message DeleteTasksRequest
+{
+  int32 task_id = 1;
+}
+
+message DeleteTaskResponse
+{
+  string status = 1;
+}

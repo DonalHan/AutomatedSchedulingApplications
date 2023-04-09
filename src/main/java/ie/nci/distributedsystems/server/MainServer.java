@@ -14,7 +14,7 @@ public class MainServer
     {
         Server server = ServerBuilder.forPort(50021)
                 .addService(new TaskManagementServerImpl())
-//                .addService(new TaskDeletionServiceImpl())
+                .addService(new TaskDeletionServiceImpl())
 //                .addService(new TaskUpdateServiceImpl())
                 .build();
 

@@ -42,7 +42,6 @@ public class ControllerGUI
         System.out.println("Task added successfully. ID number:  " + addTaskResponse.getTaskId());
 
         //Server streaming impl--------------------
-
         Date newDate = Date.newBuilder()
             .setDay(24)
             .setMonth(8)
