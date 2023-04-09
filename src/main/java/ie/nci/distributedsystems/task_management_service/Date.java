@@ -4,19 +4,21 @@
 package ie.nci.distributedsystems.task_management_service;
 
 /**
- * Protobuf type {@code taskmanagementservice.AddTaskResponse}
+ * Protobuf type {@code taskmanagementservice.Date}
  */
-public  final class AddTaskResponse extends
+public  final class Date extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:taskmanagementservice.AddTaskResponse)
-    AddTaskResponseOrBuilder {
+    // @@protoc_insertion_point(message_implements:taskmanagementservice.Date)
+    DateOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use AddTaskResponse.newBuilder() to construct.
-  private AddTaskResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use Date.newBuilder() to construct.
+  private Date(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private AddTaskResponse() {
-    taskId_ = 0;
+  private Date() {
+    year_ = 0;
+    month_ = 0;
+    day_ = 0;
   }
 
   @java.lang.Override
@@ -24,7 +26,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private AddTaskResponse(
+  private Date(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -45,7 +47,17 @@ private static final long serialVersionUID = 0L;
             break;
           case 8: {
 
-            taskId_ = input.readInt32();
+            year_ = input.readInt32();
+            break;
+          }
+          case 16: {
+
+            month_ = input.readInt32();
+            break;
+          }
+          case 24: {
+
+            day_ = input.readInt32();
             break;
           }
           default: {
@@ -69,24 +81,42 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_AddTaskResponse_descriptor;
+    return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_Date_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_AddTaskResponse_fieldAccessorTable
+    return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_Date_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            ie.nci.distributedsystems.task_management_service.AddTaskResponse.class, ie.nci.distributedsystems.task_management_service.AddTaskResponse.Builder.class);
+            ie.nci.distributedsystems.task_management_service.Date.class, ie.nci.distributedsystems.task_management_service.Date.Builder.class);
   }
 
-  public static final int TASK_ID_FIELD_NUMBER = 1;
-  private int taskId_;
+  public static final int YEAR_FIELD_NUMBER = 1;
+  private int year_;
   /**
-   * <code>int32 task_id = 1;</code>
+   * <code>int32 year = 1;</code>
    */
-  public int getTaskId() {
-    return taskId_;
+  public int getYear() {
+    return year_;
+  }
+
+  public static final int MONTH_FIELD_NUMBER = 2;
+  private int month_;
+  /**
+   * <code>int32 month = 2;</code>
+   */
+  public int getMonth() {
+    return month_;
+  }
+
+  public static final int DAY_FIELD_NUMBER = 3;
+  private int day_;
+  /**
+   * <code>int32 day = 3;</code>
+   */
+  public int getDay() {
+    return day_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -103,8 +133,14 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (taskId_ != 0) {
-      output.writeInt32(1, taskId_);
+    if (year_ != 0) {
+      output.writeInt32(1, year_);
+    }
+    if (month_ != 0) {
+      output.writeInt32(2, month_);
+    }
+    if (day_ != 0) {
+      output.writeInt32(3, day_);
     }
     unknownFields.writeTo(output);
   }
@@ -115,9 +151,17 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (taskId_ != 0) {
+    if (year_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, taskId_);
+        .computeInt32Size(1, year_);
+    }
+    if (month_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, month_);
+    }
+    if (day_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, day_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -129,14 +173,18 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof ie.nci.distributedsystems.task_management_service.AddTaskResponse)) {
+    if (!(obj instanceof ie.nci.distributedsystems.task_management_service.Date)) {
       return super.equals(obj);
     }
-    ie.nci.distributedsystems.task_management_service.AddTaskResponse other = (ie.nci.distributedsystems.task_management_service.AddTaskResponse) obj;
+    ie.nci.distributedsystems.task_management_service.Date other = (ie.nci.distributedsystems.task_management_service.Date) obj;
 
     boolean result = true;
-    result = result && (getTaskId()
-        == other.getTaskId());
+    result = result && (getYear()
+        == other.getYear());
+    result = result && (getMonth()
+        == other.getMonth());
+    result = result && (getDay()
+        == other.getDay());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -148,76 +196,80 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + TASK_ID_FIELD_NUMBER;
-    hash = (53 * hash) + getTaskId();
+    hash = (37 * hash) + YEAR_FIELD_NUMBER;
+    hash = (53 * hash) + getYear();
+    hash = (37 * hash) + MONTH_FIELD_NUMBER;
+    hash = (53 * hash) + getMonth();
+    hash = (37 * hash) + DAY_FIELD_NUMBER;
+    hash = (53 * hash) + getDay();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(byte[] data)
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(java.io.InputStream input)
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseDelimitedFrom(java.io.InputStream input)
+  public static ie.nci.distributedsystems.task_management_service.Date parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseDelimitedFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse parseFrom(
+  public static ie.nci.distributedsystems.task_management_service.Date parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -230,7 +282,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(ie.nci.distributedsystems.task_management_service.AddTaskResponse prototype) {
+  public static Builder newBuilder(ie.nci.distributedsystems.task_management_service.Date prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @java.lang.Override
@@ -246,26 +298,26 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code taskmanagementservice.AddTaskResponse}
+   * Protobuf type {@code taskmanagementservice.Date}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:taskmanagementservice.AddTaskResponse)
-      ie.nci.distributedsystems.task_management_service.AddTaskResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:taskmanagementservice.Date)
+      ie.nci.distributedsystems.task_management_service.DateOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_AddTaskResponse_descriptor;
+      return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_Date_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_AddTaskResponse_fieldAccessorTable
+      return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_Date_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ie.nci.distributedsystems.task_management_service.AddTaskResponse.class, ie.nci.distributedsystems.task_management_service.AddTaskResponse.Builder.class);
+              ie.nci.distributedsystems.task_management_service.Date.class, ie.nci.distributedsystems.task_management_service.Date.Builder.class);
     }
 
-    // Construct using ie.nci.distributedsystems.task_management_service.AddTaskResponse.newBuilder()
+    // Construct using ie.nci.distributedsystems.task_management_service.Date.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -283,7 +335,11 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      taskId_ = 0;
+      year_ = 0;
+
+      month_ = 0;
+
+      day_ = 0;
 
       return this;
     }
@@ -291,17 +347,17 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_AddTaskResponse_descriptor;
+      return ie.nci.distributedsystems.task_management_service.TaskManagement.internal_static_taskmanagementservice_Date_descriptor;
     }
 
     @java.lang.Override
-    public ie.nci.distributedsystems.task_management_service.AddTaskResponse getDefaultInstanceForType() {
-      return ie.nci.distributedsystems.task_management_service.AddTaskResponse.getDefaultInstance();
+    public ie.nci.distributedsystems.task_management_service.Date getDefaultInstanceForType() {
+      return ie.nci.distributedsystems.task_management_service.Date.getDefaultInstance();
     }
 
     @java.lang.Override
-    public ie.nci.distributedsystems.task_management_service.AddTaskResponse build() {
-      ie.nci.distributedsystems.task_management_service.AddTaskResponse result = buildPartial();
+    public ie.nci.distributedsystems.task_management_service.Date build() {
+      ie.nci.distributedsystems.task_management_service.Date result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -309,9 +365,11 @@ private static final long serialVersionUID = 0L;
     }
 
     @java.lang.Override
-    public ie.nci.distributedsystems.task_management_service.AddTaskResponse buildPartial() {
-      ie.nci.distributedsystems.task_management_service.AddTaskResponse result = new ie.nci.distributedsystems.task_management_service.AddTaskResponse(this);
-      result.taskId_ = taskId_;
+    public ie.nci.distributedsystems.task_management_service.Date buildPartial() {
+      ie.nci.distributedsystems.task_management_service.Date result = new ie.nci.distributedsystems.task_management_service.Date(this);
+      result.year_ = year_;
+      result.month_ = month_;
+      result.day_ = day_;
       onBuilt();
       return result;
     }
@@ -350,18 +408,24 @@ private static final long serialVersionUID = 0L;
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof ie.nci.distributedsystems.task_management_service.AddTaskResponse) {
-        return mergeFrom((ie.nci.distributedsystems.task_management_service.AddTaskResponse)other);
+      if (other instanceof ie.nci.distributedsystems.task_management_service.Date) {
+        return mergeFrom((ie.nci.distributedsystems.task_management_service.Date)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(ie.nci.distributedsystems.task_management_service.AddTaskResponse other) {
-      if (other == ie.nci.distributedsystems.task_management_service.AddTaskResponse.getDefaultInstance()) return this;
-      if (other.getTaskId() != 0) {
-        setTaskId(other.getTaskId());
+    public Builder mergeFrom(ie.nci.distributedsystems.task_management_service.Date other) {
+      if (other == ie.nci.distributedsystems.task_management_service.Date.getDefaultInstance()) return this;
+      if (other.getYear() != 0) {
+        setYear(other.getYear());
+      }
+      if (other.getMonth() != 0) {
+        setMonth(other.getMonth());
+      }
+      if (other.getDay() != 0) {
+        setDay(other.getDay());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -378,11 +442,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      ie.nci.distributedsystems.task_management_service.AddTaskResponse parsedMessage = null;
+      ie.nci.distributedsystems.task_management_service.Date parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (ie.nci.distributedsystems.task_management_service.AddTaskResponse) e.getUnfinishedMessage();
+        parsedMessage = (ie.nci.distributedsystems.task_management_service.Date) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -392,28 +456,80 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int taskId_ ;
+    private int year_ ;
     /**
-     * <code>int32 task_id = 1;</code>
+     * <code>int32 year = 1;</code>
      */
-    public int getTaskId() {
-      return taskId_;
+    public int getYear() {
+      return year_;
     }
     /**
-     * <code>int32 task_id = 1;</code>
+     * <code>int32 year = 1;</code>
      */
-    public Builder setTaskId(int value) {
+    public Builder setYear(int value) {
       
-      taskId_ = value;
+      year_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>int32 task_id = 1;</code>
+     * <code>int32 year = 1;</code>
      */
-    public Builder clearTaskId() {
+    public Builder clearYear() {
       
-      taskId_ = 0;
+      year_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int month_ ;
+    /**
+     * <code>int32 month = 2;</code>
+     */
+    public int getMonth() {
+      return month_;
+    }
+    /**
+     * <code>int32 month = 2;</code>
+     */
+    public Builder setMonth(int value) {
+      
+      month_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 month = 2;</code>
+     */
+    public Builder clearMonth() {
+      
+      month_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int day_ ;
+    /**
+     * <code>int32 day = 3;</code>
+     */
+    public int getDay() {
+      return day_;
+    }
+    /**
+     * <code>int32 day = 3;</code>
+     */
+    public Builder setDay(int value) {
+      
+      day_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 day = 3;</code>
+     */
+    public Builder clearDay() {
+      
+      day_ = 0;
       onChanged();
       return this;
     }
@@ -430,41 +546,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:taskmanagementservice.AddTaskResponse)
+    // @@protoc_insertion_point(builder_scope:taskmanagementservice.Date)
   }
 
-  // @@protoc_insertion_point(class_scope:taskmanagementservice.AddTaskResponse)
-  private static final ie.nci.distributedsystems.task_management_service.AddTaskResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:taskmanagementservice.Date)
+  private static final ie.nci.distributedsystems.task_management_service.Date DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new ie.nci.distributedsystems.task_management_service.AddTaskResponse();
+    DEFAULT_INSTANCE = new ie.nci.distributedsystems.task_management_service.Date();
   }
 
-  public static ie.nci.distributedsystems.task_management_service.AddTaskResponse getDefaultInstance() {
+  public static ie.nci.distributedsystems.task_management_service.Date getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<AddTaskResponse>
-      PARSER = new com.google.protobuf.AbstractParser<AddTaskResponse>() {
+  private static final com.google.protobuf.Parser<Date>
+      PARSER = new com.google.protobuf.AbstractParser<Date>() {
     @java.lang.Override
-    public AddTaskResponse parsePartialFrom(
+    public Date parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new AddTaskResponse(input, extensionRegistry);
+      return new Date(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<AddTaskResponse> parser() {
+  public static com.google.protobuf.Parser<Date> parser() {
     return PARSER;
   }
 
   @java.lang.Override
-  public com.google.protobuf.Parser<AddTaskResponse> getParserForType() {
+  public com.google.protobuf.Parser<Date> getParserForType() {
     return PARSER;
   }
 
   @java.lang.Override
-  public ie.nci.distributedsystems.task_management_service.AddTaskResponse getDefaultInstanceForType() {
+  public ie.nci.distributedsystems.task_management_service.Date getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

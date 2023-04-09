@@ -8,15 +8,15 @@ public interface GetTasksByDateRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>.google.protobuf.Timestamp date = 1;</code>
+   * <code>.taskmanagementservice.Date date = 1;</code>
    */
   boolean hasDate();
   /**
-   * <code>.google.protobuf.Timestamp date = 1;</code>
+   * <code>.taskmanagementservice.Date date = 1;</code>
    */
-  com.google.protobuf.Timestamp getDate();
+  ie.nci.distributedsystems.task_management_service.Date getDate();
   /**
-   * <code>.google.protobuf.Timestamp date = 1;</code>
+   * <code>.taskmanagementservice.Date date = 1;</code>
    */
-  com.google.protobuf.TimestampOrBuilder getDateOrBuilder();
+  ie.nci.distributedsystems.task_management_service.DateOrBuilder getDateOrBuilder();
 }

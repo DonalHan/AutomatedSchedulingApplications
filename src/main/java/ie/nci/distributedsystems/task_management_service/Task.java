@@ -16,7 +16,7 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private Task() {
-    id_ = "";
+    id_ = 0;
     name_ = "";
     description_ = "";
     assignedUser_ = "";
@@ -46,10 +46,9 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
+          case 8: {
 
-            id_ = s;
+            id_ = input.readInt32();
             break;
           }
           case 18: {
@@ -65,11 +64,11 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 34: {
-            com.google.protobuf.Timestamp.Builder subBuilder = null;
+            ie.nci.distributedsystems.task_management_service.Date.Builder subBuilder = null;
             if (dueDate_ != null) {
               subBuilder = dueDate_.toBuilder();
             }
-            dueDate_ = input.readMessage(com.google.protobuf.Timestamp.parser(), extensionRegistry);
+            dueDate_ = input.readMessage(ie.nci.distributedsystems.task_management_service.Date.parser(), extensionRegistry);
             if (subBuilder != null) {
               subBuilder.mergeFrom(dueDate_);
               dueDate_ = subBuilder.buildPartial();
@@ -116,37 +115,12 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ID_FIELD_NUMBER = 1;
-  private volatile java.lang.Object id_;
+  private int id_;
   /**
-   * <code>string id = 1;</code>
+   * <code>int32 id = 1;</code>
    */
-  public java.lang.String getId() {
-    java.lang.Object ref = id_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      id_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string id = 1;</code>
-   */
-  public com.google.protobuf.ByteString
-      getIdBytes() {
-    java.lang.Object ref = id_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      id_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public int getId() {
+    return id_;
   }
 
   public static final int NAME_FIELD_NUMBER = 2;
@@ -218,23 +192,23 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int DUE_DATE_FIELD_NUMBER = 4;
-  private com.google.protobuf.Timestamp dueDate_;
+  private ie.nci.distributedsystems.task_management_service.Date dueDate_;
   /**
-   * <code>.google.protobuf.Timestamp due_date = 4;</code>
+   * <code>.taskmanagementservice.Date due_date = 4;</code>
    */
   public boolean hasDueDate() {
     return dueDate_ != null;
   }
   /**
-   * <code>.google.protobuf.Timestamp due_date = 4;</code>
+   * <code>.taskmanagementservice.Date due_date = 4;</code>
    */
-  public com.google.protobuf.Timestamp getDueDate() {
-    return dueDate_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : dueDate_;
+  public ie.nci.distributedsystems.task_management_service.Date getDueDate() {
+    return dueDate_ == null ? ie.nci.distributedsystems.task_management_service.Date.getDefaultInstance() : dueDate_;
   }
   /**
-   * <code>.google.protobuf.Timestamp due_date = 4;</code>
+   * <code>.taskmanagementservice.Date due_date = 4;</code>
    */
-  public com.google.protobuf.TimestampOrBuilder getDueDateOrBuilder() {
+  public ie.nci.distributedsystems.task_management_service.DateOrBuilder getDueDateOrBuilder() {
     return getDueDate();
   }
 
@@ -286,8 +260,8 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
+    if (id_ != 0) {
+      output.writeInt32(1, id_);
     }
     if (!getNameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
@@ -310,8 +284,9 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
+    if (id_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(1, id_);
     }
     if (!getNameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
@@ -342,8 +317,8 @@ private static final long serialVersionUID = 0L;
     ie.nci.distributedsystems.task_management_service.Task other = (ie.nci.distributedsystems.task_management_service.Task) obj;
 
     boolean result = true;
-    result = result && getId()
-        .equals(other.getId());
+    result = result && (getId()
+        == other.getId());
     result = result && getName()
         .equals(other.getName());
     result = result && getDescription()
@@ -367,7 +342,7 @@ private static final long serialVersionUID = 0L;
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + ID_FIELD_NUMBER;
-    hash = (53 * hash) + getId().hashCode();
+    hash = (53 * hash) + getId();
     hash = (37 * hash) + NAME_FIELD_NUMBER;
     hash = (53 * hash) + getName().hashCode();
     hash = (37 * hash) + DESCRIPTION_FIELD_NUMBER;
@@ -511,7 +486,7 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      id_ = "";
+      id_ = 0;
 
       name_ = "";
 
@@ -608,9 +583,8 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(ie.nci.distributedsystems.task_management_service.Task other) {
       if (other == ie.nci.distributedsystems.task_management_service.Task.getDefaultInstance()) return this;
-      if (!other.getId().isEmpty()) {
-        id_ = other.id_;
-        onChanged();
+      if (other.getId() != 0) {
+        setId(other.getId());
       }
       if (!other.getName().isEmpty()) {
         name_ = other.name_;
@@ -656,71 +630,28 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object id_ = "";
+    private int id_ ;
     /**
-     * <code>string id = 1;</code>
+     * <code>int32 id = 1;</code>
      */
-    public java.lang.String getId() {
-      java.lang.Object ref = id_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        id_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
+    public int getId() {
+      return id_;
     }
     /**
-     * <code>string id = 1;</code>
+     * <code>int32 id = 1;</code>
      */
-    public com.google.protobuf.ByteString
-        getIdBytes() {
-      java.lang.Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string id = 1;</code>
-     */
-    public Builder setId(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+    public Builder setId(int value) {
+      
       id_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string id = 1;</code>
+     * <code>int32 id = 1;</code>
      */
     public Builder clearId() {
       
-      id_ = getDefaultInstance().getId();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string id = 1;</code>
-     */
-    public Builder setIdBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      id_ = value;
+      id_ = 0;
       onChanged();
       return this;
     }
@@ -863,29 +794,29 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private com.google.protobuf.Timestamp dueDate_ = null;
+    private ie.nci.distributedsystems.task_management_service.Date dueDate_ = null;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> dueDateBuilder_;
+        ie.nci.distributedsystems.task_management_service.Date, ie.nci.distributedsystems.task_management_service.Date.Builder, ie.nci.distributedsystems.task_management_service.DateOrBuilder> dueDateBuilder_;
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
     public boolean hasDueDate() {
       return dueDateBuilder_ != null || dueDate_ != null;
     }
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
-    public com.google.protobuf.Timestamp getDueDate() {
+    public ie.nci.distributedsystems.task_management_service.Date getDueDate() {
       if (dueDateBuilder_ == null) {
-        return dueDate_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : dueDate_;
+        return dueDate_ == null ? ie.nci.distributedsystems.task_management_service.Date.getDefaultInstance() : dueDate_;
       } else {
         return dueDateBuilder_.getMessage();
       }
     }
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
-    public Builder setDueDate(com.google.protobuf.Timestamp value) {
+    public Builder setDueDate(ie.nci.distributedsystems.task_management_service.Date value) {
       if (dueDateBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -899,10 +830,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
     public Builder setDueDate(
-        com.google.protobuf.Timestamp.Builder builderForValue) {
+        ie.nci.distributedsystems.task_management_service.Date.Builder builderForValue) {
       if (dueDateBuilder_ == null) {
         dueDate_ = builderForValue.build();
         onChanged();
@@ -913,13 +844,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
-    public Builder mergeDueDate(com.google.protobuf.Timestamp value) {
+    public Builder mergeDueDate(ie.nci.distributedsystems.task_management_service.Date value) {
       if (dueDateBuilder_ == null) {
         if (dueDate_ != null) {
           dueDate_ =
-            com.google.protobuf.Timestamp.newBuilder(dueDate_).mergeFrom(value).buildPartial();
+            ie.nci.distributedsystems.task_management_service.Date.newBuilder(dueDate_).mergeFrom(value).buildPartial();
         } else {
           dueDate_ = value;
         }
@@ -931,7 +862,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
     public Builder clearDueDate() {
       if (dueDateBuilder_ == null) {
@@ -945,33 +876,33 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
-    public com.google.protobuf.Timestamp.Builder getDueDateBuilder() {
+    public ie.nci.distributedsystems.task_management_service.Date.Builder getDueDateBuilder() {
       
       onChanged();
       return getDueDateFieldBuilder().getBuilder();
     }
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
-    public com.google.protobuf.TimestampOrBuilder getDueDateOrBuilder() {
+    public ie.nci.distributedsystems.task_management_service.DateOrBuilder getDueDateOrBuilder() {
       if (dueDateBuilder_ != null) {
         return dueDateBuilder_.getMessageOrBuilder();
       } else {
         return dueDate_ == null ?
-            com.google.protobuf.Timestamp.getDefaultInstance() : dueDate_;
+            ie.nci.distributedsystems.task_management_service.Date.getDefaultInstance() : dueDate_;
       }
     }
     /**
-     * <code>.google.protobuf.Timestamp due_date = 4;</code>
+     * <code>.taskmanagementservice.Date due_date = 4;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
+        ie.nci.distributedsystems.task_management_service.Date, ie.nci.distributedsystems.task_management_service.Date.Builder, ie.nci.distributedsystems.task_management_service.DateOrBuilder> 
         getDueDateFieldBuilder() {
       if (dueDateBuilder_ == null) {
         dueDateBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>(
+            ie.nci.distributedsystems.task_management_service.Date, ie.nci.distributedsystems.task_management_service.Date.Builder, ie.nci.distributedsystems.task_management_service.DateOrBuilder>(
                 getDueDate(),
                 getParentForChildren(),
                 isClean());
