@@ -1,50 +1,51 @@
-/*A simple server implementation for the Automated Scheduling Application that deals with adding reviewing tasks
+/*
+* A simple server implementation for the Automated Scheduling Application that deals with adding reviewing tasks
 * This implementation demonstrates Unary and Server Streaming services
 */
 package ie.nci.distributedsystems.task_management_service;
 
-import com.google.protobuf.Timestamp;
+import ie.nci.distributedsystems.taskrepository.TaskRepo;
 import io.grpc.stub.StreamObserver;
-import java.util.ArrayList;
 import java.util.List;
 
 //Declaring the management implementation and extending the Impl class from the proto helper files
 public class TaskManagementServerImpl extends TaskManagementServiceGrpc.TaskManagementServiceImplBase
 {
-    //Declaring a list to hold tasks added by the user
-    List<Task> taskList = new ArrayList<>();
-    int currentTopId = 0;
+    /*A task repository constructor for this service implementation so that it works off the same repository instance */
+    private final TaskRepo taskRepository; //Task repo instance variable
+    public TaskManagementServerImpl(TaskRepo taskRepository) //Impl constructor linking it to the Task repo
+    {
+        this.taskRepository = taskRepository;
+    }
+
+
+    /*The task management methods to handle the requests and responses from the client-------------------*/
+    /*Add task deals with adding a new task to the repository and returns the newly created ID for said task*/
     @Override
     public void addTask(AddTaskRequest request, StreamObserver<AddTaskResponse> responseObserver)
     {
-        Task newTask = request.getTask();
-        currentTopId++;
+        Task newTask = request.getTask(); //storing the request task for readability
+        Task addedTask = taskRepository.addTask(newTask); //calling the task repo's addTask method to add the task to the list
 
-        newTask = newTask.toBuilder()
-                .setId(currentTopId)
+
+        AddTaskResponse taskResponse = AddTaskResponse.newBuilder() //declaring a response to return the ID
+                .setTaskId(addedTask.getId()) //setting the newly created ID in the response
                 .build();
 
-        taskList.add(newTask);
-
-        AddTaskResponse taskResponse = AddTaskResponse.newBuilder()
-                .setTaskId(newTask.getId())
-                .build();
-
-        responseObserver.onNext(taskResponse);
-        responseObserver.onCompleted();
+        responseObserver.onNext(taskResponse); //Returning the ID
+        responseObserver.onCompleted(); //Completing the service
     }
 
+    /*Get task by date takes in a date object from the client and returns all tasks that fall on this date*/
     public void getTasksByDate(GetTasksByDateRequest request, StreamObserver<Task> responseObserver)
     {
-        Date userTime = request.getDate();
-        for (Task task: taskList)
+        Date userTime = request.getDate(); //Storing the request date for readability
+        List<Task> tasksByDate = taskRepository.getTasksByDate(userTime); //Calling the task repos getTasksByDate and storing the returned tasks into a list
+        for (Task task: tasksByDate) //Sending the stream of tasks back to the client
         {
-            if(userTime.equals(task.getDueDate()))
-            {
-                responseObserver.onNext(task);
-            }
+            responseObserver.onNext(task);
         }
-        responseObserver.onCompleted();
+        responseObserver.onCompleted(); //Completing the service
     }
 
 }

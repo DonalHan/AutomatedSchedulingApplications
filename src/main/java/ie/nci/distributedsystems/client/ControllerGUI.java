@@ -1,5 +1,9 @@
 package ie.nci.distributedsystems.client;
 
+import ie.nci.distributedsystems.task_deletion_service.DeleteTaskRequest;
+import ie.nci.distributedsystems.task_deletion_service.DeleteTaskResponse;
+import ie.nci.distributedsystems.task_deletion_service.DeleteTasksRequest;
+import ie.nci.distributedsystems.task_deletion_service.TaskDeletionServiceGrpc;
 import ie.nci.distributedsystems.task_management_service.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -21,6 +25,8 @@ public class ControllerGUI
         //Stubs
         TaskManagementServiceGrpc.TaskManagementServiceBlockingStub blockingStub = TaskManagementServiceGrpc.newBlockingStub(channel);
         TaskManagementServiceGrpc.TaskManagementServiceStub asyncStub = TaskManagementServiceGrpc.newStub(channel);
+        TaskDeletionServiceGrpc.TaskDeletionServiceBlockingStub blockingStubDeletion = TaskDeletionServiceGrpc.newBlockingStub(channel);
+        TaskDeletionServiceGrpc.TaskDeletionServiceStub asyncStubDeletion = TaskDeletionServiceGrpc.newStub(channel);
 
         Task task = Task.newBuilder()
                 .setAssignedUser("Donal Hanway")
@@ -41,7 +47,7 @@ public class ControllerGUI
         AddTaskResponse addTaskResponse = blockingStub.addTask(addTaskRequest);
         System.out.println("Task added successfully. ID number:  " + addTaskResponse.getTaskId());
 
-        //Server streaming impl--------------------
+        //Server streaming impl - streaming multiple tasks by date--------------------
         Date newDate = Date.newBuilder()
             .setDay(24)
             .setMonth(8)
@@ -79,6 +85,53 @@ public class ControllerGUI
 
         asyncStub.getTasksByDate(dateRequest, streamDates);
         latch.await(5, TimeUnit.SECONDS);
+
+        //Task deletion service------------------------------------------
+        //Deleting a single task--------------------------------
+
+
+        DeleteTaskRequest deleteTaskRequest = DeleteTaskRequest.newBuilder()
+                        .setTaskId(2)
+                        .build();
+
+        DeleteTaskResponse deleteTaskResponse = blockingStubDeletion.deleteTask(deleteTaskRequest);
+        System.out.println(deleteTaskResponse.getStatus());
+
+
+        CountDownLatch latch2 = new CountDownLatch(1);
+        StreamObserver<DeleteTasksRequest> deleteTasksRequestStreamObserver = asyncStubDeletion.deleteTasks(new StreamObserver<DeleteTaskResponse>()
+        {
+            @Override
+            public void onNext(DeleteTaskResponse deleteTaskResponse)
+            {
+                System.out.println(deleteTaskResponse.getStatus());
+            }
+
+            @Override
+            public void onError(Throwable throwable)
+            {
+                throwable.printStackTrace();
+                latch2.countDown();
+            }
+
+            @Override
+            public void onCompleted()
+            {
+                System.out.println("Completed");
+                latch2.countDown();
+            }
+        });
+
+        int [] numbers = {1, 2, 3, 4, 5};
+        for (int number : numbers)
+        {
+            deleteTasksRequestStreamObserver.onNext(DeleteTasksRequest.newBuilder()
+                    .setTaskId(number)
+                    .build());
+        }
+        deleteTasksRequestStreamObserver.onCompleted();
+        latch2.await(5, TimeUnit.SECONDS);
+
 
         System.out.println("Channel shutdown");
         channel.shutdownNow();
