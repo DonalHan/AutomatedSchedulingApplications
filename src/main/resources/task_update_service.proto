@@ -1,0 +1,17 @@
+syntax = "proto3";
+import "task_management_service.proto";
+option java_multiple_files = true;
+option java_package = "ie.nci.distributedsystems.task_update_service";
+option java_outer_classname = "TaskUpdate";
+package taskupdateservice;
+
+service TaskUpdateService
+{
+  rpc UpdateTasks(stream Task) returns (Status);
+  rpc GetTaskUpdates(stream Task) returns (stream Task);
+}
+
+message Status
+{
+  string message = 1;
+}
