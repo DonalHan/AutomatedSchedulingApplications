@@ -1,9 +1,9 @@
 package ie.nci.distributedsystems.task_update_service;
 
-import ie.nci.distributedsystems.task_deletion_service.DeleteTaskResponse;
-import ie.nci.distributedsystems.task_deletion_service.TaskDeletionServiceGrpc;
+
 import ie.nci.distributedsystems.task_management_service.Task;
 import ie.nci.distributedsystems.taskrepository.TaskRepo;
+import ie.nci.distributedsystems.taskrepository.TaskRepo.TaskTracker;
 import io.grpc.stub.StreamObserver;
 
 public class TaskUpdateServiceImpl extends TaskUpdateServiceGrpc.TaskUpdateServiceImplBase
@@ -64,27 +64,51 @@ public class TaskUpdateServiceImpl extends TaskUpdateServiceGrpc.TaskUpdateServi
     }
 
     @Override
-    public StreamObserver<GetTaskUpdatesRequest> getTaskUpdates(StreamObserver<GetTaskUpdatesResponse> responseObserver)
-    {
-        return new StreamObserver<GetTaskUpdatesRequest>()
+    public StreamObserver<GetTaskUpdatesRequest> getTaskUpdates(StreamObserver<GetTaskUpdatesResponse> responseObserver) {
+        TaskTracker taskTracker = new TaskTracker() // This task tracker is used to keep track of any update changes
+        {
+            private int taskId; // any task tracker that is created is linked to a specidfic task ID
+            @Override
+            public void onTaskUpdated(Task updatedTask) //Once this task trackers method is called, it sends the task being updated back to the client
+            {
+                GetTaskUpdatesResponse response = GetTaskUpdatesResponse.newBuilder()
+                        .setTask(updatedTask)
+                        .build();
+                responseObserver.onNext(response);
+            }
+            @Override
+            public int getTaskId() //used to keep track of the ID being subscribed
+            {
+                return taskId;
+            }
+            public void setTaskId(int taskId) //used to set the task trackers ID variable
+            {
+                this.taskId = taskId;
+            }
+        };
+
+        return new StreamObserver<GetTaskUpdatesRequest>() // This stream observer is used handle requests from the client of ID's to be tracked
         {
             @Override
             public void onNext(GetTaskUpdatesRequest getTaskUpdatesRequest)
             {
-
+                taskTracker.setTaskId(getTaskUpdatesRequest.getTaskId());
+                taskRepository.registerTaskTracker(taskTracker);
             }
 
             @Override
             public void onError(Throwable throwable)
             {
-
+                System.out.println("Error: " + throwable.getMessage());
             }
 
             @Override
             public void onCompleted()
             {
-
+                taskRepository.unregisterTaskTracker(taskTracker);
+                responseObserver.onCompleted();
             }
         };
     }
+
 }

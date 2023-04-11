@@ -8,16 +8,23 @@ import java.util.List;
 
 public class TaskRepo
 {
-    List<Task> taskList = new ArrayList<>();
+    private List<Task> taskList = new ArrayList<>(); //An Array list to hold all the stored tasks
+    private List<TaskTracker> taskUpdateTracker = new ArrayList<>(); //An array List to store the trackers of tasks
     int currentTopId = 0; //A variable to keep track of the ID's of tasks within the list
+    public interface TaskTracker //An interface to define the methods each subscription request must utilise
+    {
+        void onTaskUpdated(Task updatedTask); //Triggered if there is a tracked task that is updated
+        int getTaskId(); //a getter for the tracked ID task
+        void setTaskId(int taskId); //a setter for the tracked ID task
+    }
 
-    /*Adding some mock tasks to the list to demonstrate application functions*/
-
+    /*Adding some mock tasks to the list to demonstrate application functions using a constructor*/
     public TaskRepo()
     {
         // Add mock tasks
-        for (int i = 1; i <= 8; i++) {
-            Task mockTask = Task.newBuilder()
+        for (int i = 1; i <= 8; i++)
+        {
+            Task mockTask = Task.newBuilder() //declaring a builder to populate the list
                     .setId(i)
                     .setName("Mock Task " + i)
                     .setDescription("This is a mock task with ID " + i)
@@ -29,11 +36,11 @@ public class TaskRepo
                             .build())
                     .build();
             taskList.add(mockTask);
-            currentTopId = i;
+            currentTopId = i; //increment the Top ID
         }
     }
 
-    // A method to add tasks to the Array list
+    /*A method to add tasks to the Array list-------------------------------------------------------------------------*/
     public Task addTask(Task task)
     {
         currentTopId++; // incrementing the new task to the next ID name
@@ -43,36 +50,54 @@ public class TaskRepo
         taskList.add(newTask); // Adding this task to the Array List
         return newTask; //Returning the task
     }
+
+
+    /*A method that takes in a date and return the tasks within the list with said date-------------------------------*/
     public List<Task> getTasksByDate(Date userTime)
     {
-        List<Task> tasksByDate = new ArrayList<>();
-        for (Task task : taskList)
+        List<Task> tasksByDate = new ArrayList<>(); //declaring a list to store the matched task dates
+        for (Task task : taskList) //iterating over the list to find the matched dates
         {
             if (userTime.equals(task.getDueDate()))
             {
-                tasksByDate.add(task);
+                tasksByDate.add(task); //if theres a match, add it to the list
             }
         }
-        return tasksByDate;
+        return tasksByDate; //return the list
     }
 
+
+
+    /*A method that takes in an ID and removes any tasks in the list with said ID-------------------------------------*/
     public boolean deleteTask(int userID)
     {
-        boolean isDeleted = false;
-        Iterator<Task> iterator = taskList.iterator();
+        boolean isDeleted = false; //a validator to be returned
+        Iterator<Task> iterator = taskList.iterator(); //declaring an iterator to pass over the list (for loops failed here)
 
         while (iterator.hasNext())
         {
             Task task = iterator.next();
-            if (userID == task.getId())
+            if (userID == task.getId()) //If there is a match, remove the task and stop the loop
             {
                 iterator.remove();
-                isDeleted = true;
+                isDeleted = true; //validated
                 break;
             }
         }
 
-        return isDeleted;
+        return isDeleted; //return validator
+    }
+
+    /*Methods that add or remove trackers from the tracker list-------------------------------------------------------*/
+
+    public void registerTaskTracker(TaskTracker tracker)
+    {
+        taskUpdateTracker.add(tracker);
+    }
+
+    public void unregisterTaskTracker(TaskTracker observer)
+    {
+        taskUpdateTracker.remove(observer);
     }
 
     public boolean updateTask(Task updatedTask)
@@ -101,29 +126,62 @@ public class TaskRepo
             {
                 taskBuilder.setName(updatedTask.getName());
             }
+            else //if not copy the information from the old task
+            {
+                taskBuilder.setName(taskToEdit.getName());
+            }
             if (!updatedTask.getDescription().isEmpty())  // if the updated information passed in was 'name'
             {
                 taskBuilder.setDescription(updatedTask.getDescription()); // if the updated information passed in was 'Description'
+            }
+            else //if not copy the information from the old task
+            {
+                taskBuilder.setDescription(taskToEdit.getDescription());
             }
             if (!updatedTask.getAssignedUser().isEmpty())
             {
                 taskBuilder.setAssignedUser(updatedTask.getAssignedUser()); // if the updated information passed in was 'AssignedUser'
             }
+            else //if not copy the information from the old task
+            {
+                taskBuilder.setAssignedUser(taskToEdit.getAssignedUser());
+            }
             if (updatedTask.hasDueDate())
             {
                 taskBuilder.setDueDate(updatedTask.getDueDate()); // if the updated information passed in was 'DueDate'
             }
+            else //if not copy the information from the old task
+            {
+                taskBuilder.setDueDate(taskToEdit.getDueDate());
+            }
 
+            Task newTask = taskBuilder.build(); //building the task and storing it into a new task
+            taskList.set(taskIndex, newTask); //adding the new updated task to the list at the stored index spot
+            isEdited = true; //validated
 
-            Task newTask = taskBuilder.build();
-            taskList.set(taskIndex, newTask);
-            isEdited = true;
+            for (TaskTracker tracker : taskUpdateTracker) //iterating through the task trackers
+            {
+                if (tracker.getTaskId() == newTask.getId()) //if any of the tasks updated matches a task ID that's being tracked. . .
+                {
+                    //call its onTaskUpdated (which builds a response, passes it into the StreamObserver and return the task update to the client)
+                    tracker.onTaskUpdated(newTask);
+                }
+            }
         }
 
-        return isEdited;
+        return isEdited; //return validator
     }
-
-
+    public Task getTask(int taskId)
+    {
+        for (Task task : taskList)
+        {
+            if (taskId == task.getId())
+            {
+                return task;
+            }
+        }
+        return null;
+    }
 
 //    @Override
 //    public String toString() {
