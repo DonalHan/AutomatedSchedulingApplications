@@ -56,7 +56,7 @@ public class TaskRepo
         return tasksByDate;
     }
 
-    public boolean deleteTask(int userID) 
+    public boolean deleteTask(int userID)
     {
         boolean isDeleted = false;
         Iterator<Task> iterator = taskList.iterator();
@@ -74,6 +74,55 @@ public class TaskRepo
 
         return isDeleted;
     }
+
+    public boolean updateTask(Task updatedTask)
+    {
+        Boolean isEdited = false; //validator to be returned to the user
+        int findId = updatedTask.getId(); //storing the updated task ID
+        int taskIndex = -1; //Variable to store the index of the task to be edited
+        int count = 0; //counter to populate the previous taskIndex
+
+        for(Task task : taskList) //for loop to find the task in the list to be updated
+        {
+            if (findId == task.getId()) //if the updated task, and the task in the list IDs match, store the index
+            {
+                taskIndex = count;
+                break; //if found break
+            }
+            count++; //increment if not found
+        }
+
+        if(taskIndex != -1) // if the task to be updated was found, proceed with editing
+        {
+            Task taskToEdit = taskList.get(taskIndex); //populate a new task with the task found in the list
+            Task.Builder taskBuilder = taskToEdit.toBuilder(); //pass it into the generated builder class
+
+            if (!updatedTask.getName().isEmpty())  // if the updated information passed in was 'name'
+            {
+                taskBuilder.setName(updatedTask.getName());
+            }
+            if (!updatedTask.getDescription().isEmpty())  // if the updated information passed in was 'name'
+            {
+                taskBuilder.setDescription(updatedTask.getDescription()); // if the updated information passed in was 'Description'
+            }
+            if (!updatedTask.getAssignedUser().isEmpty())
+            {
+                taskBuilder.setAssignedUser(updatedTask.getAssignedUser()); // if the updated information passed in was 'AssignedUser'
+            }
+            if (updatedTask.hasDueDate())
+            {
+                taskBuilder.setDueDate(updatedTask.getDueDate()); // if the updated information passed in was 'DueDate'
+            }
+
+
+            Task newTask = taskBuilder.build();
+            taskList.set(taskIndex, newTask);
+            isEdited = true;
+        }
+
+        return isEdited;
+    }
+
 
 
 //    @Override

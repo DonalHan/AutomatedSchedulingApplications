@@ -5,10 +5,15 @@ import ie.nci.distributedsystems.task_deletion_service.DeleteTaskResponse;
 import ie.nci.distributedsystems.task_deletion_service.DeleteTasksRequest;
 import ie.nci.distributedsystems.task_deletion_service.TaskDeletionServiceGrpc;
 import ie.nci.distributedsystems.task_management_service.*;
+import ie.nci.distributedsystems.task_update_service.TaskUpdateServiceGrpc;
+import ie.nci.distributedsystems.task_update_service.UpdateTaskRequest;
+import ie.nci.distributedsystems.task_update_service.UpdateTaskResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -25,8 +30,11 @@ public class ControllerGUI
         //Stubs
         TaskManagementServiceGrpc.TaskManagementServiceBlockingStub blockingStub = TaskManagementServiceGrpc.newBlockingStub(channel);
         TaskManagementServiceGrpc.TaskManagementServiceStub asyncStub = TaskManagementServiceGrpc.newStub(channel);
+
         TaskDeletionServiceGrpc.TaskDeletionServiceBlockingStub blockingStubDeletion = TaskDeletionServiceGrpc.newBlockingStub(channel);
         TaskDeletionServiceGrpc.TaskDeletionServiceStub asyncStubDeletion = TaskDeletionServiceGrpc.newStub(channel);
+
+        TaskUpdateServiceGrpc.TaskUpdateServiceStub asyncStubUpdate = TaskUpdateServiceGrpc.newStub(channel);
 
         Task task = Task.newBuilder()
                 .setAssignedUser("Donal Hanway")
@@ -97,7 +105,7 @@ public class ControllerGUI
         DeleteTaskResponse deleteTaskResponse = blockingStubDeletion.deleteTask(deleteTaskRequest);
         System.out.println(deleteTaskResponse.getStatus());
 
-
+        //Deleting multiple  tasks--------------------------------
         CountDownLatch latch2 = new CountDownLatch(1);
         StreamObserver<DeleteTasksRequest> deleteTasksRequestStreamObserver = asyncStubDeletion.deleteTasks(new StreamObserver<DeleteTaskResponse>()
         {
@@ -117,7 +125,7 @@ public class ControllerGUI
             @Override
             public void onCompleted()
             {
-                System.out.println("Completed");
+                System.out.println("Delete Service Completed");
                 latch2.countDown();
             }
         });
@@ -132,8 +140,59 @@ public class ControllerGUI
         deleteTasksRequestStreamObserver.onCompleted();
         latch2.await(5, TimeUnit.SECONDS);
 
+        //Update tasks request-----------------------------------------------------------
+        CountDownLatch latch3 = new CountDownLatch(1);
+
+        StreamObserver<UpdateTaskRequest> updateTaskRequestStreamObserver = asyncStubUpdate.updateTasks(new StreamObserver<UpdateTaskResponse>()
+        {
+            @Override
+            public void onNext(UpdateTaskResponse updateTaskResponse)
+            {
+                System.out.println("Update status: " + updateTaskResponse.getStatus());
+            }
+
+            @Override
+            public void onError(Throwable throwable)
+            {
+                System.out.println("Error occurred: " + throwable.getMessage());
+                latch3.countDown();
+            }
+
+            @Override
+            public void onCompleted()
+            {
+                System.out.println("Update Service Completed");
+                latch3.countDown();
+
+            }
+        });
+
+        List<Task> tasksToUpdate = Arrays.asList(
+                Task.newBuilder()
+                        .setId(6)
+                        .setName("Updated Task 6")
+                        .build(),
+                Task.newBuilder()
+                        .setId(7)
+                        .setName("Updated Task 7")
+                        .build(),
+                Task.newBuilder()
+                        .setId(1)
+                        .setName("Updated Task 8")
+                        .build()
+        );
+
+
+        for (Task taskUpdate : tasksToUpdate) {
+            updateTaskRequestStreamObserver.onNext(UpdateTaskRequest.newBuilder()
+                    .setTask(taskUpdate)
+                    .build());
+        }
+        updateTaskRequestStreamObserver.onCompleted();
+        latch3.await(5, TimeUnit.SECONDS);
 
         System.out.println("Channel shutdown");
         channel.shutdownNow();
     }
+
 }

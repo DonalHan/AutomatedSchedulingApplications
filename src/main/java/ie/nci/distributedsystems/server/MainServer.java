@@ -17,10 +17,12 @@ public class MainServer
         // Declaring service implementations with the shared task repository
         TaskManagementServerImpl taskManagementService = new TaskManagementServerImpl(taskRepository);
         TaskDeletionServiceImpl taskDeletionService = new TaskDeletionServiceImpl(taskRepository);
+        TaskUpdateServiceImpl taskUpdateService = new TaskUpdateServiceImpl(taskRepository);
 
         Server server = ServerBuilder.forPort(50021)
                 .addService(taskManagementService)
                 .addService(taskDeletionService)
+                .addService(taskUpdateService)
                 .build();
 
         server.start();

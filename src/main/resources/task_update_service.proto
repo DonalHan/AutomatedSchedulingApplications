@@ -7,11 +7,25 @@ package taskupdateservice;
 
 service TaskUpdateService
 {
-  rpc UpdateTasks(stream Task) returns (Status);
-  rpc GetTaskUpdates(stream Task) returns (stream Task);
+  rpc UpdateTasks(stream UpdateTaskRequest) returns (UpdateTaskResponse);
+  rpc GetTaskUpdates(stream GetTaskUpdatesRequest) returns (stream GetTaskUpdatesResponse);
 }
 
-message Status
+message UpdateTaskResponse
 {
-  string message = 1;
+  string status = 1;
+}
+
+message UpdateTaskRequest
+{
+  taskmanagementservice.Task task = 1;
+}
+
+message GetTaskUpdatesRequest
+{
+  int32 task_id = 1;
+}
+message GetTaskUpdatesResponse
+{
+  taskmanagementservice.Task task = 1;
 }
