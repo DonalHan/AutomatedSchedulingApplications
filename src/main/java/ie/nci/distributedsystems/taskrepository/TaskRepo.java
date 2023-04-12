@@ -100,6 +100,8 @@ public class TaskRepo
         taskUpdateTracker.remove(observer);
     }
 
+
+    /* A method that updates any given task within the task list. Any tasks being tacked are also returned to the client*/
     public boolean updateTask(Task updatedTask)
     {
         Boolean isEdited = false; //validator to be returned to the user
@@ -130,6 +132,7 @@ public class TaskRepo
             {
                 taskBuilder.setName(taskToEdit.getName());
             }
+
             if (!updatedTask.getDescription().isEmpty())  // if the updated information passed in was 'name'
             {
                 taskBuilder.setDescription(updatedTask.getDescription()); // if the updated information passed in was 'Description'
@@ -138,6 +141,7 @@ public class TaskRepo
             {
                 taskBuilder.setDescription(taskToEdit.getDescription());
             }
+
             if (!updatedTask.getAssignedUser().isEmpty())
             {
                 taskBuilder.setAssignedUser(updatedTask.getAssignedUser()); // if the updated information passed in was 'AssignedUser'
@@ -146,6 +150,7 @@ public class TaskRepo
             {
                 taskBuilder.setAssignedUser(taskToEdit.getAssignedUser());
             }
+
             if (updatedTask.hasDueDate())
             {
                 taskBuilder.setDueDate(updatedTask.getDueDate()); // if the updated information passed in was 'DueDate'
@@ -171,6 +176,8 @@ public class TaskRepo
 
         return isEdited; //return validator
     }
+
+
     public Task getTask(int taskId)
     {
         for (Task task : taskList)

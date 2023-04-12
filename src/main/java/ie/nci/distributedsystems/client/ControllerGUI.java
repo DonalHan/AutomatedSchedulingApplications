@@ -14,11 +14,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import javax.swing.*;
+import java.awt.*;
 
 
-public class ControllerGUI
-{
-    public static void main(String[] args) throws InterruptedException {
+public class ControllerGUI  {
+
+    public static void main(String[] args) throws InterruptedException
+    {
+
         //Channel/bridge------------------------------
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50021)
                 .usePlaintext()
@@ -46,8 +50,8 @@ public class ControllerGUI
                 .build();
 
         AddTaskRequest addTaskRequest = AddTaskRequest.newBuilder()
-                        .setTask(task)
-                        .build();
+                .setTask(task)
+                .build();
 
 
         AddTaskResponse addTaskResponse = blockingStub.addTask(addTaskRequest);
@@ -55,10 +59,10 @@ public class ControllerGUI
 
         //Server streaming impl - streaming multiple tasks by date--------------------
         Date newDate = Date.newBuilder()
-            .setDay(24)
-            .setMonth(8)
-            .setYear(1991)
-            .build();
+                .setDay(24)
+                .setMonth(8)
+                .setYear(1991)
+                .build();
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -66,24 +70,20 @@ public class ControllerGUI
                 .setDate(newDate)
                 .build();
 
-        StreamObserver<Task> streamDates=  new StreamObserver<Task>()
-        {
+        StreamObserver<Task> streamDates = new StreamObserver<Task>() {
             @Override
-            public void onNext(Task task)
-            {
+            public void onNext(Task task) {
                 System.out.println("Task: " + task.toString());
             }
 
             @Override
-            public void onError(Throwable throwable)
-            {
+            public void onError(Throwable throwable) {
                 throwable.printStackTrace();
                 latch.countDown();
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
                 System.out.println("Stream completed.");
                 latch.countDown();
             }
@@ -97,40 +97,35 @@ public class ControllerGUI
 
 
         DeleteTaskRequest deleteTaskRequest = DeleteTaskRequest.newBuilder()
-                        .setTaskId(2)
-                        .build();
+                .setTaskId(2)
+                .build();
 
         DeleteTaskResponse deleteTaskResponse = blockingStubDeletion.deleteTask(deleteTaskRequest);
         System.out.println(deleteTaskResponse.getStatus());
 
         //Deleting multiple  tasks--------------------------------
         CountDownLatch latch2 = new CountDownLatch(1);
-        StreamObserver<DeleteTasksRequest> deleteTasksRequestStreamObserver = asyncStubDeletion.deleteTasks(new StreamObserver<DeleteTaskResponse>()
-        {
+        StreamObserver<DeleteTasksRequest> deleteTasksRequestStreamObserver = asyncStubDeletion.deleteTasks(new StreamObserver<DeleteTaskResponse>() {
             @Override
-            public void onNext(DeleteTaskResponse deleteTaskResponse)
-            {
+            public void onNext(DeleteTaskResponse deleteTaskResponse) {
                 System.out.println(deleteTaskResponse.getStatus());
             }
 
             @Override
-            public void onError(Throwable throwable)
-            {
+            public void onError(Throwable throwable) {
                 throwable.printStackTrace();
                 latch2.countDown();
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
                 System.out.println("Delete Service Completed");
                 latch2.countDown();
             }
         });
 
-        int [] numbers = {1, 2, 3, 4, 5};
-        for (int number : numbers)
-        {
+        int[] numbers = {1, 2, 3, 4, 5};
+        for (int number : numbers) {
             deleteTasksRequestStreamObserver.onNext(DeleteTasksRequest.newBuilder()
                     .setTaskId(number)
                     .build());
@@ -146,21 +141,18 @@ public class ControllerGUI
 
         StreamObserver<GetTaskUpdatesRequest> updateRequestObserver = asyncStubUpdate.getTaskUpdates(new StreamObserver<GetTaskUpdatesResponse>() {
             @Override
-            public void onNext(GetTaskUpdatesResponse getTaskUpdatesResponse)
-            {
+            public void onNext(GetTaskUpdatesResponse getTaskUpdatesResponse) {
                 System.out.println("Task updated: " + getTaskUpdatesResponse.getTask().toString());
 
             }
 
             @Override
-            public void onError(Throwable throwable)
-            {
+            public void onError(Throwable throwable) {
                 System.out.println("Error: " + throwable.getMessage());
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
                 System.out.println("Task update service completed.");
             }
         });
@@ -169,30 +161,25 @@ public class ControllerGUI
         updateRequestObserver.onNext(getTaskUpdatesRequest);
 
 
-
         //Update tasks request-----------------------------------------------------------
 
 
         CountDownLatch latch3 = new CountDownLatch(1);
 
-        StreamObserver<UpdateTaskRequest> updateTaskRequestStreamObserver = asyncStubUpdate.updateTasks(new StreamObserver<UpdateTaskResponse>()
-        {
+        StreamObserver<UpdateTaskRequest> updateTaskRequestStreamObserver = asyncStubUpdate.updateTasks(new StreamObserver<UpdateTaskResponse>() {
             @Override
-            public void onNext(UpdateTaskResponse updateTaskResponse)
-            {
+            public void onNext(UpdateTaskResponse updateTaskResponse) {
                 System.out.println("Update status: " + updateTaskResponse.getStatus());
             }
 
             @Override
-            public void onError(Throwable throwable)
-            {
+            public void onError(Throwable throwable) {
                 System.out.println("Error occurred: " + throwable.getMessage());
                 latch3.countDown();
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
                 System.out.println("Update Service Completed");
                 latch3.countDown();
 
@@ -224,12 +211,15 @@ public class ControllerGUI
         latch3.await(5, TimeUnit.SECONDS);
 
 
-
         updateRequestObserver.onCompleted();
 
 
         System.out.println("Channel shutdown");
         channel.shutdownNow();
+
+
     }
 
+
 }
+
