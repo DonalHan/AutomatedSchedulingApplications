@@ -11,6 +11,7 @@ service TaskManagementService
 {
   rpc AddTask(AddTaskRequest) returns (AddTaskResponse);
   rpc GetTasksByDate(GetTasksByDateRequest) returns (stream Task);
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
 }
 
 message Task
@@ -42,5 +43,16 @@ message GetTasksByDateRequest
 {
   Date date = 1;
 }
+
+message GetTaskRequest
+{
+  int32 task_id = 1;
+}
+
+message GetTaskResponse
+{
+  Task task = 1;
+}
+
 
 

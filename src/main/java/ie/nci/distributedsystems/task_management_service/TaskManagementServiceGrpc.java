@@ -91,6 +91,38 @@ public final class TaskManagementServiceGrpc {
      return getGetTasksByDateMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<ie.nci.distributedsystems.task_management_service.GetTaskRequest,
+      ie.nci.distributedsystems.task_management_service.GetTaskResponse> getGetTaskMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "GetTask",
+      requestType = ie.nci.distributedsystems.task_management_service.GetTaskRequest.class,
+      responseType = ie.nci.distributedsystems.task_management_service.GetTaskResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<ie.nci.distributedsystems.task_management_service.GetTaskRequest,
+      ie.nci.distributedsystems.task_management_service.GetTaskResponse> getGetTaskMethod() {
+    io.grpc.MethodDescriptor<ie.nci.distributedsystems.task_management_service.GetTaskRequest, ie.nci.distributedsystems.task_management_service.GetTaskResponse> getGetTaskMethod;
+    if ((getGetTaskMethod = TaskManagementServiceGrpc.getGetTaskMethod) == null) {
+      synchronized (TaskManagementServiceGrpc.class) {
+        if ((getGetTaskMethod = TaskManagementServiceGrpc.getGetTaskMethod) == null) {
+          TaskManagementServiceGrpc.getGetTaskMethod = getGetTaskMethod = 
+              io.grpc.MethodDescriptor.<ie.nci.distributedsystems.task_management_service.GetTaskRequest, ie.nci.distributedsystems.task_management_service.GetTaskResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(
+                  "taskmanagementservice.TaskManagementService", "GetTask"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  ie.nci.distributedsystems.task_management_service.GetTaskRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  ie.nci.distributedsystems.task_management_service.GetTaskResponse.getDefaultInstance()))
+                  .setSchemaDescriptor(new TaskManagementServiceMethodDescriptorSupplier("GetTask"))
+                  .build();
+          }
+        }
+     }
+     return getGetTaskMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -132,6 +164,13 @@ public final class TaskManagementServiceGrpc {
       asyncUnimplementedUnaryCall(getGetTasksByDateMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void getTask(ie.nci.distributedsystems.task_management_service.GetTaskRequest request,
+        io.grpc.stub.StreamObserver<ie.nci.distributedsystems.task_management_service.GetTaskResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetTaskMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -148,6 +187,13 @@ public final class TaskManagementServiceGrpc {
                 ie.nci.distributedsystems.task_management_service.GetTasksByDateRequest,
                 ie.nci.distributedsystems.task_management_service.Task>(
                   this, METHODID_GET_TASKS_BY_DATE)))
+          .addMethod(
+            getGetTaskMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                ie.nci.distributedsystems.task_management_service.GetTaskRequest,
+                ie.nci.distributedsystems.task_management_service.GetTaskResponse>(
+                  this, METHODID_GET_TASK)))
           .build();
     }
   }
@@ -185,6 +231,14 @@ public final class TaskManagementServiceGrpc {
       asyncServerStreamingCall(
           getChannel().newCall(getGetTasksByDateMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void getTask(ie.nci.distributedsystems.task_management_service.GetTaskRequest request,
+        io.grpc.stub.StreamObserver<ie.nci.distributedsystems.task_management_service.GetTaskResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getGetTaskMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -219,6 +273,13 @@ public final class TaskManagementServiceGrpc {
       return blockingServerStreamingCall(
           getChannel(), getGetTasksByDateMethod(), getCallOptions(), request);
     }
+
+    /**
+     */
+    public ie.nci.distributedsystems.task_management_service.GetTaskResponse getTask(ie.nci.distributedsystems.task_management_service.GetTaskRequest request) {
+      return blockingUnaryCall(
+          getChannel(), getGetTaskMethod(), getCallOptions(), request);
+    }
   }
 
   /**
@@ -246,10 +307,19 @@ public final class TaskManagementServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(getAddTaskMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<ie.nci.distributedsystems.task_management_service.GetTaskResponse> getTask(
+        ie.nci.distributedsystems.task_management_service.GetTaskRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getGetTaskMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_ADD_TASK = 0;
   private static final int METHODID_GET_TASKS_BY_DATE = 1;
+  private static final int METHODID_GET_TASK = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -275,6 +345,10 @@ public final class TaskManagementServiceGrpc {
         case METHODID_GET_TASKS_BY_DATE:
           serviceImpl.getTasksByDate((ie.nci.distributedsystems.task_management_service.GetTasksByDateRequest) request,
               (io.grpc.stub.StreamObserver<ie.nci.distributedsystems.task_management_service.Task>) responseObserver);
+          break;
+        case METHODID_GET_TASK:
+          serviceImpl.getTask((ie.nci.distributedsystems.task_management_service.GetTaskRequest) request,
+              (io.grpc.stub.StreamObserver<ie.nci.distributedsystems.task_management_service.GetTaskResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -339,6 +413,7 @@ public final class TaskManagementServiceGrpc {
               .setSchemaDescriptor(new TaskManagementServiceFileDescriptorSupplier())
               .addMethod(getAddTaskMethod())
               .addMethod(getGetTasksByDateMethod())
+              .addMethod(getGetTaskMethod())
               .build();
         }
       }

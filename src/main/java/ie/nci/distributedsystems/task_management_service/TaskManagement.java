@@ -39,6 +39,16 @@ public final class TaskManagement {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_taskmanagementservice_GetTasksByDateRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_taskmanagementservice_GetTaskRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_taskmanagementservice_GetTaskRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_taskmanagementservice_GetTaskResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_taskmanagementservice_GetTaskResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -58,14 +68,19 @@ public final class TaskManagement {
       "\022)\n\004task\030\001 \001(\0132\033.taskmanagementservice.T" +
       "ask\"\"\n\017AddTaskResponse\022\017\n\007task_id\030\001 \001(\005\"" +
       "B\n\025GetTasksByDateRequest\022)\n\004date\030\001 \001(\0132\033" +
-      ".taskmanagementservice.Date2\320\001\n\025TaskMana" +
-      "gementService\022X\n\007AddTask\022%.taskmanagemen" +
-      "tservice.AddTaskRequest\032&.taskmanagement" +
-      "service.AddTaskResponse\022]\n\016GetTasksByDat" +
-      "e\022,.taskmanagementservice.GetTasksByDate" +
-      "Request\032\033.taskmanagementservice.Task0\001BE" +
-      "\n1ie.nci.distributedsystems.task_managem" +
-      "ent_serviceB\016TaskManagementP\001b\006proto3"
+      ".taskmanagementservice.Date\"!\n\016GetTaskRe" +
+      "quest\022\017\n\007task_id\030\001 \001(\005\"<\n\017GetTaskRespons" +
+      "e\022)\n\004task\030\001 \001(\0132\033.taskmanagementservice." +
+      "Task2\252\002\n\025TaskManagementService\022X\n\007AddTas" +
+      "k\022%.taskmanagementservice.AddTaskRequest" +
+      "\032&.taskmanagementservice.AddTaskResponse" +
+      "\022]\n\016GetTasksByDate\022,.taskmanagementservi" +
+      "ce.GetTasksByDateRequest\032\033.taskmanagemen" +
+      "tservice.Task0\001\022X\n\007GetTask\022%.taskmanagem" +
+      "entservice.GetTaskRequest\032&.taskmanageme" +
+      "ntservice.GetTaskResponseBE\n1ie.nci.dist" +
+      "ributedsystems.task_management_serviceB\016" +
+      "TaskManagementP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -110,6 +125,18 @@ public final class TaskManagement {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_taskmanagementservice_GetTasksByDateRequest_descriptor,
         new java.lang.String[] { "Date", });
+    internal_static_taskmanagementservice_GetTaskRequest_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_taskmanagementservice_GetTaskRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_taskmanagementservice_GetTaskRequest_descriptor,
+        new java.lang.String[] { "TaskId", });
+    internal_static_taskmanagementservice_GetTaskResponse_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_taskmanagementservice_GetTaskResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_taskmanagementservice_GetTaskResponse_descriptor,
+        new java.lang.String[] { "Task", });
     com.google.protobuf.TimestampProto.getDescriptor();
   }
 

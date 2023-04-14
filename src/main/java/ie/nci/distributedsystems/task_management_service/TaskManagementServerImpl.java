@@ -5,6 +5,7 @@
 package ie.nci.distributedsystems.task_management_service;
 
 import ie.nci.distributedsystems.taskrepository.TaskRepo;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
 
@@ -47,5 +48,30 @@ public class TaskManagementServerImpl extends TaskManagementServiceGrpc.TaskMana
         }
         responseObserver.onCompleted(); //Completing the service
     }
+
+    @Override
+    public void getTask(GetTaskRequest request, StreamObserver<GetTaskResponse> responseObserver)
+    {
+        int taskId = request.getTaskId();
+        Task task = taskRepository.getTask(taskId);
+
+        if (task != null)
+        {
+            GetTaskResponse getTaskResponse = GetTaskResponse.newBuilder()
+                    .setTask(task)
+                    .build();
+
+            responseObserver.onNext(getTaskResponse);
+        }
+        else
+        {
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("Task with ID " + taskId + " not found")
+                    .asRuntimeException());
+        }
+
+        responseObserver.onCompleted();
+    }
+
 
 }

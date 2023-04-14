@@ -7,6 +7,9 @@ import ie.nci.distributedsystems.taskrepository.TaskRepo;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+import java.net.InetAddress;
 
 public class MainServer
 {
@@ -26,6 +29,20 @@ public class MainServer
                 .build();
 
         server.start();
+
+        // Create a JmDNS instance
+        JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+
+        // Create a ServiceInfo instance for each service
+        ServiceInfo taskManagementServiceInfo = ServiceInfo.create("_taskmanagement._tcp.local.", "TaskManagementService", 50021, "");
+        ServiceInfo taskDeletionServiceInfo = ServiceInfo.create("_taskdeletion._tcp.local.", "TaskDeletionService", 50021, "");
+        ServiceInfo taskUpdateServiceInfo = ServiceInfo.create("_taskupdate._tcp.local.", "TaskUpdateService", 50021, "");
+
+        // Register the services with JmDNS
+        jmdns.registerService(taskManagementServiceInfo);
+        jmdns.registerService(taskDeletionServiceInfo);
+        jmdns.registerService(taskUpdateServiceInfo);
+
         System.out.println("Server started on port " + server.getPort());
         server.awaitTermination();
     }
