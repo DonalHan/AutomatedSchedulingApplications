@@ -1,11 +1,15 @@
 package ie.nci.distributedsystems.client;
 
+import ie.nci.distributedsystems.task_management_service.AddTaskResponse;
+import ie.nci.distributedsystems.task_management_service.Date;
+import ie.nci.distributedsystems.task_management_service.Task;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class AutomatedSchedulingApplicationGUI extends JFrame {
-    private JPanel ASAMain;
+    public JPanel ASAMain;
     private JTabbedPane tabbedPane1;
     private JLabel addTaskLabel;
     private JTextField taskDescTextField;
@@ -51,15 +55,18 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
     private JButton getTaskUpdateButton;
     private JLabel updateTaskIDLabel;
 
-    public AutomatedSchedulingApplicationGUI (String title)
+    private ControllerGUI controller;
+
+    public AutomatedSchedulingApplicationGUI (ControllerGUI controller)
     {
-        super(title);
+        this.controller = controller;
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(ASAMain);
         this.pack();
         addTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                addTaskButtonClicked();
 
             }
         });
@@ -99,6 +106,29 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
 
             }
         });
+    }
+
+    //On Button Click requests
+    private void addTaskButtonClicked()
+    {
+        String taskName = taskNameTextField.getText();
+        String taskDescription = taskDescTextField.getText();
+        String assignedUser = taskWorkerTextField.getText();
+
+        int day = Integer.parseInt(addTaskDayComboBox.getSelectedItem().toString());
+        int month = Integer.parseInt(addTaskMonthComboBox.getSelectedItem().toString());
+        int year = Integer.parseInt(addTaskYearComboBox.getSelectedItem().toString());
+
+        Task task = Task.newBuilder()
+                .setName(taskName)
+                .setDescription(taskDescription)
+                .setDueDate(Date.newBuilder().setYear(year).setMonth(month).setDay(day).build())
+                .setAssignedUser(assignedUser)
+                .build();
+
+        AddTaskResponse addTaskResponse = controller.addTask(task);
+        JOptionPane.showMessageDialog(ASAMain, "Task added successfully! Task ID: " + addTaskResponse.getTaskId(), "Task Added", JOptionPane.INFORMATION_MESSAGE);
+
     }
 
 

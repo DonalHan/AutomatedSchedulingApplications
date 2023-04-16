@@ -50,18 +50,29 @@ public class ControllerGUI
             Thread.sleep(1000);
         }
 
+
         // Launch the GUI
-//        ControllerGUI controller = new ControllerGUI();
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                JFrame frame = new JFrame("Automated Scheduling Application");
-//                frame.setContentPane(new AutomatedSchedulingApplicationGUI(controller).ASAMain);
-//                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//                frame.pack();
-//                frame.setVisible(true);
-//            }
-//        });
+        ControllerGUI controller = new ControllerGUI();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    // Set the look and feel to the system's look and feel
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+                {
+                    e.printStackTrace();
+                }
+
+                JFrame frame = new JFrame("Automated Scheduling Application");
+                frame.setContentPane(new AutomatedSchedulingApplicationGUI(controller).ASAMain);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
 
         // Add a new task
         Task newTask = Task.newBuilder()
