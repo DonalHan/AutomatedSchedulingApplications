@@ -50,19 +50,33 @@ public class ControllerGUI
             Thread.sleep(1000);
         }
 
+        // Launch the GUI
+//        ControllerGUI controller = new ControllerGUI();
+//        SwingUtilities.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                JFrame frame = new JFrame("Automated Scheduling Application");
+//                frame.setContentPane(new AutomatedSchedulingApplicationGUI(controller).ASAMain);
+//                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//                frame.pack();
+//                frame.setVisible(true);
+//            }
+//        });
+
         // Add a new task
         Task newTask = Task.newBuilder()
                 .setName("Test Task")
                 .setDescription("This is a test task")
                 .setDueDate(Date.newBuilder().setYear(2023).setMonth(4).setDay(12).build())
+                .setAssignedUser("Donal")
                 .build();
         AddTaskResponse addTaskResponse = addTask(newTask);
         System.out.println("Task added: " + addTaskResponse.getTaskId());
 
-        // Get tasks by date
-        Date date = Date.newBuilder().setYear(2023).setMonth(4).setDay(12).build();
-        List<Task> tasks = getTasksByDate(date);
-        System.out.println("Tasks for " + date.toString() + ": " + tasks);
+//        // Get tasks by date
+//        Date date = Date.newBuilder().setYear(2023).setMonth(4).setDay(12).build();
+//        List<Task> tasks = getTasksByDate(date);
+//        System.out.println("Tasks for " + date.toString() + ": " + tasks);
 
     }
     private static void setupGrpcConnection(ServiceInfo serviceInfo) throws InterruptedException
@@ -115,7 +129,7 @@ public class ControllerGUI
             }
         }
     }
-    private static AddTaskResponse addTask(Task task)
+    public static AddTaskResponse addTask(Task task)
     {
         AddTaskRequest addTaskRequest = AddTaskRequest.newBuilder()
                 .setTask(task)
@@ -279,6 +293,8 @@ public class ControllerGUI
 
         return updateRequestObserver;
     }
+
+
 
 }
 
