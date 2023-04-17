@@ -74,15 +74,15 @@ public class ControllerGUI
             }
         });
 
-        // Add a new task
-        Task newTask = Task.newBuilder()
-                .setName("Test Task")
-                .setDescription("This is a test task")
-                .setDueDate(Date.newBuilder().setYear(2023).setMonth(4).setDay(12).build())
-                .setAssignedUser("Donal")
-                .build();
-        AddTaskResponse addTaskResponse = addTask(newTask);
-        System.out.println("Task added: " + addTaskResponse.getTaskId());
+//        // Add a new task
+//        Task newTask = Task.newBuilder()
+//                .setName("Test Task")
+//                .setDescription("This is a test task")
+//                .setDueDate(Date.newBuilder().setYear(2023).setMonth(4).setDay(12).build())
+//                .setAssignedUser("Donal")
+//                .build();
+//        AddTaskResponse addTaskResponse = addTask(newTask);
+//        System.out.println("Task added: " + addTaskResponse.getTaskId());
 
 //        // Get tasks by date
 //        Date date = Date.newBuilder().setYear(2023).setMonth(4).setDay(12).build();
@@ -148,7 +148,7 @@ public class ControllerGUI
         return blockingStub.addTask(addTaskRequest);
     }
 
-    private static List<Task> getTasksByDate(Date date) throws InterruptedException
+    public static List<Task> getTasksByDate(Date date) throws InterruptedException
     {
         CountDownLatch latch = new CountDownLatch(1);
         List<Task> tasks = new ArrayList<>();
@@ -185,7 +185,7 @@ public class ControllerGUI
         return tasks;
     }
 
-    private static GetTaskResponse getTask (int taskId)
+    public static GetTaskResponse getTask(int taskId)
     {
         GetTaskRequest taskRequest = GetTaskRequest.newBuilder()
                 .setTaskId(taskId)

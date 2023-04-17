@@ -2,11 +2,14 @@ package ie.nci.distributedsystems.client;
 
 import ie.nci.distributedsystems.task_management_service.AddTaskResponse;
 import ie.nci.distributedsystems.task_management_service.Date;
+import ie.nci.distributedsystems.task_management_service.GetTaskResponse;
 import ie.nci.distributedsystems.task_management_service.Task;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AutomatedSchedulingApplicationGUI extends JFrame {
     public JPanel ASAMain;
@@ -73,12 +76,47 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
         getTaskDateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int day = Integer.parseInt(dayComboBox.getSelectedItem().toString());
+                int month = Integer.parseInt(monthComboBox.getSelectedItem().toString());
+                int year = Integer.parseInt(yearComboBox.getSelectedItem().toString());
+
+                Date dateRequest = Date.newBuilder()
+                        .setDay(day)
+                        .setMonth(month)
+                        .setYear(year)
+                        .build();
+
+                List<Task> tasksOnDate = new ArrayList<>();
+                try
+                {
+                    tasksOnDate = controller.getTasksByDate(dateRequest);
+                }
+                catch (InterruptedException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
+                StringBuilder taskOutput = new StringBuilder();
+
+                for(Task task: tasksOnDate)
+                {
+                    taskOutput.append(taskInfo(task));
+                    taskOutput.append("\n");
+                }
+                JOptionPane.showMessageDialog(ASAMain, taskOutput, "Tasks On Date", JOptionPane.INFORMATION_MESSAGE);
+
+
 
             }
         });
         getTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int taskId = Integer.parseInt(taskIdField.getText());
+                GetTaskResponse getTaskResponse = controller.getTask(taskId);
+
+                Task taskResponse = getTaskResponse.getTask();
+                String response = taskInfo(taskResponse);
+                JOptionPane.showMessageDialog(ASAMain, response, "Task Information", JOptionPane.INFORMATION_MESSAGE);
 
             }
         });
@@ -129,6 +167,17 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
         AddTaskResponse addTaskResponse = controller.addTask(task);
         JOptionPane.showMessageDialog(ASAMain, "Task added successfully! Task ID: " + addTaskResponse.getTaskId(), "Task Added", JOptionPane.INFORMATION_MESSAGE);
 
+    }
+
+    public static String taskInfo(Task task)
+    {
+        return "Task ID: " + task.getId() + "\n"
+                + "Name: " + task.getName() + "\n"
+                + "Description: " + task.getDescription() + "\n"
+                + "Assigned User: " + task.getAssignedUser() + "\n"
+                + "Due Date: " + task.getDueDate().getDay() + "/"
+                + task.getDueDate().getMonth() + "/"
+                + task.getDueDate().getYear() + "\n";
     }
 
 
