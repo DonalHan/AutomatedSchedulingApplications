@@ -1,5 +1,6 @@
 package ie.nci.distributedsystems.client;
 
+import ie.nci.distributedsystems.task_deletion_service.DeleteTaskResponse;
 import ie.nci.distributedsystems.task_management_service.AddTaskResponse;
 import ie.nci.distributedsystems.task_management_service.Date;
 import ie.nci.distributedsystems.task_management_service.GetTaskResponse;
@@ -100,11 +101,8 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 for(Task task: tasksOnDate)
                 {
                     taskOutput.append(taskInfo(task));
-                    taskOutput.append("\n");
                 }
                 JOptionPane.showMessageDialog(ASAMain, taskOutput, "Tasks On Date", JOptionPane.INFORMATION_MESSAGE);
-
-
 
             }
         });
@@ -123,12 +121,37 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
         deleteTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int taskId = Integer.parseInt(deleteTaskIdTextField.getText());
+                DeleteTaskResponse response = controller.deleteTask(taskId);
+
+                String output = response.getStatus();
+                JOptionPane.showMessageDialog(ASAMain, response, "Delete Task", JOptionPane.INFORMATION_MESSAGE);
 
             }
         });
         deleteTasksButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String idInputs = deleteMultTaskIdTextField.getText();
+                String[] splitInput = idInputs.split(",");
+
+                ArrayList<Integer> idsToDelete = new ArrayList<>();
+
+                for (String stringId : splitInput)
+                {
+                    int taskId = Integer.parseInt(stringId.trim());
+                    idsToDelete.add(taskId);
+                }
+
+                try
+                {
+                    String output = controller.deleteMultipleTasks(idsToDelete);
+                    JOptionPane.showMessageDialog(ASAMain, output, "Delete Task", JOptionPane.INFORMATION_MESSAGE);
+                }
+                catch (InterruptedException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
 
             }
         });

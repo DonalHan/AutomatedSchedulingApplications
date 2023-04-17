@@ -192,7 +192,7 @@ public class ControllerGUI
                 .build();
         return  blockingStub.getTask(taskRequest);
     }
-    private static DeleteTaskResponse deleteTask(int taskId)
+    public static DeleteTaskResponse deleteTask(int taskId)
     {
         DeleteTaskRequest deleteTaskRequest = DeleteTaskRequest.newBuilder()
                 .setTaskId(taskId)
@@ -200,15 +200,17 @@ public class ControllerGUI
         return blockingStubDeletion.deleteTask(deleteTaskRequest);
     }
 
-    private static void deleteMultipleTasks(int[] taskIds) throws InterruptedException
+    public static String deleteMultipleTasks(ArrayList<Integer> taskIds) throws InterruptedException
     {
         CountDownLatch latch = new CountDownLatch(1);
+        StringBuilder status = new StringBuilder();
+
         StreamObserver<DeleteTasksRequest> deleteTasksRequestStreamObserver = asyncStubDeletion.deleteTasks(new StreamObserver<DeleteTaskResponse>()
         {
             @Override
             public void onNext(DeleteTaskResponse deleteTaskResponse)
             {
-                System.out.println(deleteTaskResponse.getStatus());
+                status.append(deleteTaskResponse.getStatus()).append("\n");
             }
 
             @Override
@@ -234,6 +236,8 @@ public class ControllerGUI
         }
         deleteTasksRequestStreamObserver.onCompleted();
         latch.await(5, TimeUnit.SECONDS);
+        return status.toString();
+
     }
 
     private static void updateTasks(List<Task> tasksToUpdate) throws InterruptedException
