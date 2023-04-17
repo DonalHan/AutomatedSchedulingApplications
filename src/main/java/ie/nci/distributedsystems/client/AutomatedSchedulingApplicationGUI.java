@@ -7,6 +7,7 @@ import ie.nci.distributedsystems.task_management_service.GetTaskResponse;
 import ie.nci.distributedsystems.task_management_service.Task;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -47,13 +48,7 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
     private JComboBox addTaskMonthComboBox;
     private JComboBox addTaskYearComboBox;
     private JTextField updateTaskIdField;
-    private JTextField updateTaskNameField;
-    private JTextField updateTaskDescTextField;
-    private JTextField updateTaskWorkerTextField;
     private JButton updateTaskButton;
-    private JComboBox updateTaskDayComboBox;
-    private JComboBox updateTaskYearComboBox;
-    private JComboBox updateTaskMonthComboBox;
     private JLabel getTaskUpdateLabel;
     private JTextField getTaskUpdateTextField;
     private JButton getTaskUpdateButton;
@@ -70,7 +65,23 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
         addTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addTaskButtonClicked();
+                String taskName = taskNameTextField.getText();
+                String taskDescription = taskDescTextField.getText();
+                String assignedUser = taskWorkerTextField.getText();
+
+                int day = Integer.parseInt(addTaskDayComboBox.getSelectedItem().toString());
+                int month = Integer.parseInt(addTaskMonthComboBox.getSelectedItem().toString());
+                int year = Integer.parseInt(addTaskYearComboBox.getSelectedItem().toString());
+
+                Task task = Task.newBuilder()
+                        .setName(taskName)
+                        .setDescription(taskDescription)
+                        .setDueDate(Date.newBuilder().setYear(year).setMonth(month).setDay(day).build())
+                        .setAssignedUser(assignedUser)
+                        .build();
+
+                AddTaskResponse addTaskResponse = controller.addTask(task);
+                JOptionPane.showMessageDialog(ASAMain, "Task added successfully! Task ID: " + addTaskResponse.getTaskId(), "Task Added", JOptionPane.INFORMATION_MESSAGE);
 
             }
         });
@@ -159,38 +170,53 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+
+
             }
         });
         updateTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String idInputs = updateTaskIdField.getText(); // Storing the input task
+                String[] splitInput = idInputs.split(",");
 
+                ArrayList<Integer> idsToUpdate = new ArrayList<>();
+                List<Task> tasksToUpdate = new ArrayList<>();
+
+                for (String stringId : splitInput) {
+                    int taskId = Integer.parseInt(stringId.trim());
+                    idsToUpdate.add(taskId);
+                }
+
+                for (int taskId : idsToUpdate) {
+                    // Retrieve the task details
+                    GetTaskResponse response = controller.getTask(taskId);
+                    Task task = response.getTask();
+
+                    // Call the showUpdateTaskDialog method
+                    Task updatedTask = showUpdateTaskDialog(task);
+
+                    if (updatedTask != null) {
+                        tasksToUpdate.add(updatedTask);
+                    }
+                }
+
+                // Pass the updated tasks to the controller to update the task repository
+                try
+                {
+                   String status = controller.updateTasks(tasksToUpdate);
+                   JOptionPane.showMessageDialog(ASAMain, status, "Delete Task", JOptionPane.INFORMATION_MESSAGE);
+
+                }
+                catch (InterruptedException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
             }
         });
-    }
-
-    //On Button Click requests
-    private void addTaskButtonClicked()
-    {
-        String taskName = taskNameTextField.getText();
-        String taskDescription = taskDescTextField.getText();
-        String assignedUser = taskWorkerTextField.getText();
-
-        int day = Integer.parseInt(addTaskDayComboBox.getSelectedItem().toString());
-        int month = Integer.parseInt(addTaskMonthComboBox.getSelectedItem().toString());
-        int year = Integer.parseInt(addTaskYearComboBox.getSelectedItem().toString());
-
-        Task task = Task.newBuilder()
-                .setName(taskName)
-                .setDescription(taskDescription)
-                .setDueDate(Date.newBuilder().setYear(year).setMonth(month).setDay(day).build())
-                .setAssignedUser(assignedUser)
-                .build();
-
-        AddTaskResponse addTaskResponse = controller.addTask(task);
-        JOptionPane.showMessageDialog(ASAMain, "Task added successfully! Task ID: " + addTaskResponse.getTaskId(), "Task Added", JOptionPane.INFORMATION_MESSAGE);
 
     }
+
 
     public static String taskInfo(Task task)
     {
@@ -202,6 +228,87 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 + task.getDueDate().getMonth() + "/"
                 + task.getDueDate().getYear() + "\n";
     }
+
+    private Task showUpdateTaskDialog(Task task) {
+        // Create custom panel for JOptionPane
+        JPanel updatePanel = new JPanel();
+        updatePanel.setLayout(new GridLayout(0, 2));
+
+        // Add components to the custom panel and initialize with task data
+        updatePanel.add(new JLabel("Task ID: "));
+        JTextField updateTaskIdField = new JTextField(String.valueOf(task.getId()));
+        updatePanel.add(updateTaskIdField);
+
+        updatePanel.add(new JLabel("Task Name:"));
+        JTextField updateTaskNameField = new JTextField(task.getName());
+        updatePanel.add(updateTaskNameField);
+
+        updatePanel.add(new JLabel("Task Description:"));
+        JTextField updateTaskDescTextField = new JTextField(task.getDescription());
+        updatePanel.add(updateTaskDescTextField);
+
+        updatePanel.add(new JLabel("Assigned Worker:"));
+        JTextField updateTaskWorkerTextField = new JTextField(task.getAssignedUser());
+        updatePanel.add(updateTaskWorkerTextField);
+
+        updatePanel.add(new JLabel("Due Date (Day):"));
+        JComboBox<Integer> updateTaskDayComboBox = new JComboBox<>();
+        for (int i = 1; i <= 31; i++)
+        {
+            updateTaskDayComboBox.addItem(i);
+        }
+        updateTaskDayComboBox.setSelectedItem(task.getDueDate().getDay());
+        updatePanel.add(updateTaskDayComboBox);
+
+        updatePanel.add(new JLabel("Due Date (Month):"));
+        JComboBox<Integer> updateTaskMonthComboBox = new JComboBox<>();
+        for (int i = 1; i <= 12; i++)
+        {
+            updateTaskMonthComboBox.addItem(i);
+        }
+        updateTaskMonthComboBox.setSelectedItem(task.getDueDate().getMonth());
+        updatePanel.add(updateTaskMonthComboBox);
+
+        updatePanel.add(new JLabel("Due Date (Year):"));
+        JComboBox<Integer> updateTaskYearComboBox = new JComboBox<>();
+        for (int i = 2023; i <= 2030; i++)
+        {
+            updateTaskYearComboBox.addItem(i);
+        }
+        updateTaskYearComboBox.setSelectedItem(task.getDueDate().getYear());
+        updatePanel.add(updateTaskYearComboBox);
+
+        // Display JOptionPane with the custom panel
+        int result = JOptionPane.showConfirmDialog(ASAMain, updatePanel, "Update Task", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION)
+        {
+            // Retrieve input values and create a new task with the updated info
+            int taskId = Integer.parseInt(updateTaskIdField.getText());
+            String taskName = updateTaskNameField.getText();
+            String taskDesc = updateTaskDescTextField.getText();
+            String taskWorker = updateTaskWorkerTextField.getText();
+            int day = (int) updateTaskDayComboBox.getSelectedItem();
+            int month = (int) updateTaskMonthComboBox.getSelectedItem();
+            int year = (int) updateTaskYearComboBox.getSelectedItem();
+
+            Task.Builder updatedTaskBuilder = task.toBuilder();
+            updatedTaskBuilder
+                    .setId(taskId)
+                    .setName(taskName)
+                    .setDescription(taskDesc)
+                    .setAssignedUser(taskWorker)
+                    .setDueDate(Date.newBuilder().setYear(year).setMonth(month).setDay(day).build());
+
+            Task updatedTask = updatedTaskBuilder.build();
+
+            return updatedTask;
+        }
+
+        return null;
+    }
+
+
 
 
     private void createUIComponents() {

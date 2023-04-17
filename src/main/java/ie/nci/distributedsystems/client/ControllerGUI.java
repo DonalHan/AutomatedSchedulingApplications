@@ -240,16 +240,18 @@ public class ControllerGUI
 
     }
 
-    private static void updateTasks(List<Task> tasksToUpdate) throws InterruptedException
+    public static String updateTasks(List<Task> tasksToUpdate) throws InterruptedException
     {
         CountDownLatch latch = new CountDownLatch(1);
+        StringBuilder status = new StringBuilder();
+
 
         StreamObserver<UpdateTaskRequest> updateTaskRequestStreamObserver = asyncStubUpdate.updateTasks(new StreamObserver<UpdateTaskResponse>()
         {
             @Override
             public void onNext(UpdateTaskResponse updateTaskResponse)
             {
-                System.out.println("Update status: " + updateTaskResponse.getStatus());
+                status.append(updateTaskResponse.getStatus()).append("\n");
             }
 
             @Override
@@ -275,6 +277,7 @@ public class ControllerGUI
         }
         updateTaskRequestStreamObserver.onCompleted();
         latch.await(5, TimeUnit.SECONDS);
+        return status.toString();
     }
     private static StreamObserver<GetTaskUpdatesRequest> getTaskUpdates(int taskIdToObserve)
     {
