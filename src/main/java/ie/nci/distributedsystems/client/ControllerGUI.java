@@ -8,12 +8,12 @@ import ie.nci.distributedsystems.task_management_service.*;
 import ie.nci.distributedsystems.task_update_service.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -23,71 +23,59 @@ import javax.jmdns.ServiceInfo;
 import java.net.InetAddress;
 import javax.jmdns.ServiceListener;
 import javax.swing.*;
-import java.awt.*;
+
+import static ie.nci.distributedsystems.client.AutomatedSchedulingApplicationGUI.taskInfo;
 
 
 public class ControllerGUI
 {
-    private static TaskManagementServiceGrpc.TaskManagementServiceBlockingStub blockingStub;
-    private static TaskManagementServiceGrpc.TaskManagementServiceStub asyncStub;
-    private static TaskDeletionServiceGrpc.TaskDeletionServiceBlockingStub blockingStubDeletion;
-    private static TaskDeletionServiceGrpc.TaskDeletionServiceStub asyncStubDeletion;
-    private static TaskUpdateServiceGrpc.TaskUpdateServiceStub asyncStubUpdate;
-    private static boolean isConnected = false;
+    /*Instantiating the stubs for the service requests*/
+    private static TaskManagementServiceGrpc.TaskManagementServiceBlockingStub blockingStub; //blocking task management stub
+    private static TaskManagementServiceGrpc.TaskManagementServiceStub asyncStub; //async task management stub
+    private static TaskDeletionServiceGrpc.TaskDeletionServiceBlockingStub blockingStubDeletion; //unary task deletion stub
+    private static TaskDeletionServiceGrpc.TaskDeletionServiceStub asyncStubDeletion; //async task deletion stub
+    private static TaskUpdateServiceGrpc.TaskUpdateServiceStub asyncStubUpdate; //unary task management stub
+    private static boolean isConnected = false; //validator to check is the channel and server are connected
     public static void main(String[] args) throws InterruptedException, IOException
     {
-        JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
-        //Adding Service Listeners
+        /*jmDNS Implementation----------------------------------------------------------------------------------------*/
+        JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost()); // creating a jmdns instance
 
-        GrpcServiceListener grpcServiceListener = new GrpcServiceListener();
+        GrpcServiceListener grpcServiceListener = new GrpcServiceListener(); //instantiating a custom listener for each service
 
-        jmdns.addServiceListener("_taskmanagement._tcp.local.", grpcServiceListener);
-        jmdns.addServiceListener("_taskupdate._tcp.local.", grpcServiceListener);
-        jmdns.addServiceListener("_taskdeletion._tcp.local.", grpcServiceListener);
+        jmdns.addServiceListener("_taskmanagement._tcp.local.", grpcServiceListener); //adding a listener for task management service
+        jmdns.addServiceListener("_taskupdate._tcp.local.", grpcServiceListener); //adding a listener for task update service
+        jmdns.addServiceListener("_taskdeletion._tcp.local.", grpcServiceListener); //adding a listener for deletion service
 
-        while (!isConnected)
+        while (!isConnected) //using the validator to wait for the connections
         {
-            Thread.sleep(1000);
+            Thread.sleep(1000); //wait ten seconds
         }
 
 
         // Launch the GUI
-        ControllerGUI controller = new ControllerGUI();
-        SwingUtilities.invokeLater(new Runnable() {
+        ControllerGUI controller = new ControllerGUI(); //instantiating the current controller class
+        SwingUtilities.invokeLater(new Runnable()
+        {
             @Override
             public void run()
             {
                 try
                 {
-                    // Set the look and feel to the system's look and feel
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    // Try to set the aesthetic as the systems
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); //matches the current look and feel of the system
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
                 {
                     e.printStackTrace();
                 }
 
-                JFrame frame = new JFrame("Automated Scheduling Application");
-                frame.setContentPane(new AutomatedSchedulingApplicationGUI(controller).ASAMain);
+                JFrame frame = new JFrame("Automated Scheduling Application"); //create a jframe OBJECT with the application name (ASA)
+                frame.setContentPane(new AutomatedSchedulingApplicationGUI(controller).ASAMain); //set the previous Jframe object
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.pack();
                 frame.setVisible(true);
             }
         });
-
-//        // Add a new task
-//        Task newTask = Task.newBuilder()
-//                .setName("Test Task")
-//                .setDescription("This is a test task")
-//                .setDueDate(Date.newBuilder().setYear(2023).setMonth(4).setDay(12).build())
-//                .setAssignedUser("Donal")
-//                .build();
-//        AddTaskResponse addTaskResponse = addTask(newTask);
-//        System.out.println("Task added: " + addTaskResponse.getTaskId());
-
-//        // Get tasks by date
-//        Date date = Date.newBuilder().setYear(2023).setMonth(4).setDay(12).build();
-//        List<Task> tasks = getTasksByDate(date);
-//        System.out.println("Tasks for " + date.toString() + ": " + tasks);
 
     }
     private static void setupGrpcConnection(ServiceInfo serviceInfo) throws InterruptedException
@@ -190,8 +178,20 @@ public class ControllerGUI
         GetTaskRequest taskRequest = GetTaskRequest.newBuilder()
                 .setTaskId(taskId)
                 .build();
-        return  blockingStub.getTask(taskRequest);
+        try
+        {
+            return blockingStub.getTask(taskRequest);
+        }
+        catch (StatusRuntimeException error)
+        {
+            if (error.getStatus().getCode() == Status.Code.NOT_FOUND)
+            {
+                return null;
+            }
+            throw error;
+        }
     }
+
     public static DeleteTaskResponse deleteTask(int taskId)
     {
         DeleteTaskRequest deleteTaskRequest = DeleteTaskRequest.newBuilder()
@@ -279,38 +279,48 @@ public class ControllerGUI
         latch.await(5, TimeUnit.SECONDS);
         return status.toString();
     }
-    private static StreamObserver<GetTaskUpdatesRequest> getTaskUpdates(int taskIdToObserve)
+    public static StreamObserver<GetTaskUpdatesRequest> getTaskUpdates(List<Integer> taskIdsToObserve, JPanel gui)
     {
-        GetTaskUpdatesRequest getTaskUpdatesRequest = GetTaskUpdatesRequest.newBuilder()
-                .setTaskId(taskIdToObserve)
-                .build();
-
-        StreamObserver<GetTaskUpdatesRequest> updateRequestObserver = asyncStubUpdate.getTaskUpdates(new StreamObserver<GetTaskUpdatesResponse>()
-        {
+        StreamObserver<GetTaskUpdatesRequest> updateRequestObserver = asyncStubUpdate.getTaskUpdates(new StreamObserver<GetTaskUpdatesResponse>() {
             @Override
-            public void onNext(GetTaskUpdatesResponse getTaskUpdatesResponse)
-            {
-                System.out.println("Task updated: " + getTaskUpdatesResponse.getTask().toString());
+            public void onNext(GetTaskUpdatesResponse getTaskUpdatesResponse) {
+                String taskUpdateInfo = taskInfo(getTaskUpdatesResponse.getTask());
+                SwingUtilities.invokeLater(() -> JOptionPane
+                        .showMessageDialog(gui, taskUpdateInfo, "Task Update", JOptionPane.INFORMATION_MESSAGE));
             }
 
             @Override
-            public void onError(Throwable throwable)
-            {
+            public void onError(Throwable throwable) {
                 System.out.println("Error: " + throwable.getMessage());
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
                 System.out.println("Task update service completed.");
             }
         });
 
-        // Sending the task ID to observe
-        updateRequestObserver.onNext(getTaskUpdatesRequest);
+        for (int taskIdToObserve : taskIdsToObserve)
+        {
+            GetTaskUpdatesRequest getTaskUpdatesRequest = GetTaskUpdatesRequest.newBuilder()
+                    .setTaskId(taskIdToObserve)
+                    .build();
+
+            updateRequestObserver.onNext(getTaskUpdatesRequest);
+        }
 
         return updateRequestObserver;
     }
+
+    public void cancelTaskUpdates(StreamObserver<GetTaskUpdatesRequest> updateRequestObserver)
+    {
+        if (updateRequestObserver != null)
+        {
+            updateRequestObserver.onCompleted();
+        }
+    }
+
+
 
 
 

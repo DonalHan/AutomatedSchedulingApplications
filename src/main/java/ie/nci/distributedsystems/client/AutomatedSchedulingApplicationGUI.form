@@ -616,6 +616,15 @@
                   <text value="Update Task"/>
                 </properties>
               </component>
+              <component id="55fc3" class="javax.swing.JButton" binding="cancelAllUpdatesButton" default-binding="true">
+                <constraints>
+                  <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Cancel All Updates"/>
+                </properties>
+              </component>
             </children>
           </grid>
         </children>

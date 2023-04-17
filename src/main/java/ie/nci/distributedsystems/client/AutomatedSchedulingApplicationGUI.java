@@ -5,6 +5,8 @@ import ie.nci.distributedsystems.task_management_service.AddTaskResponse;
 import ie.nci.distributedsystems.task_management_service.Date;
 import ie.nci.distributedsystems.task_management_service.GetTaskResponse;
 import ie.nci.distributedsystems.task_management_service.Task;
+import ie.nci.distributedsystems.task_update_service.GetTaskUpdatesRequest;
+import io.grpc.stub.StreamObserver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,8 +55,10 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
     private JTextField getTaskUpdateTextField;
     private JButton getTaskUpdateButton;
     private JLabel updateTaskIDLabel;
+    private JButton cancelAllUpdatesButton;
 
     private ControllerGUI controller;
+    private StreamObserver<GetTaskUpdatesRequest> taskUpdateObserver;
 
     public AutomatedSchedulingApplicationGUI (ControllerGUI controller)
     {
@@ -123,9 +127,16 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 int taskId = Integer.parseInt(taskIdField.getText());
                 GetTaskResponse getTaskResponse = controller.getTask(taskId);
 
-                Task taskResponse = getTaskResponse.getTask();
-                String response = taskInfo(taskResponse);
-                JOptionPane.showMessageDialog(ASAMain, response, "Task Information", JOptionPane.INFORMATION_MESSAGE);
+                if (getTaskResponse != null)
+                {
+                    Task taskResponse = getTaskResponse.getTask();
+                    String response = taskInfo(taskResponse);
+                    JOptionPane.showMessageDialog(ASAMain, response, "Task Information", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(ASAMain, "Task with ID " + taskId + " not found", "Task Not Found", JOptionPane.ERROR_MESSAGE);
+                }
 
             }
         });
@@ -169,9 +180,19 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
         getTaskUpdateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String idInputs = getTaskUpdateTextField.getText();
+                String[] splitInput = idInputs.split(",");
+                ArrayList<Integer> idsToTrack = new ArrayList<>();
+                for (String stringId : splitInput)
+                {
+                    int taskId = Integer.parseInt(stringId.trim());
+                    idsToTrack.add(taskId);
+                }
+
+                taskUpdateObserver = controller.getTaskUpdates(idsToTrack, ASAMain);
 
 
-
+                getTaskUpdateTextField.setText("");
             }
         });
         updateTaskButton.addActionListener(new ActionListener() {
@@ -206,7 +227,6 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 {
                    String status = controller.updateTasks(tasksToUpdate);
                    JOptionPane.showMessageDialog(ASAMain, status, "Delete Task", JOptionPane.INFORMATION_MESSAGE);
-
                 }
                 catch (InterruptedException ex)
                 {
@@ -215,6 +235,13 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
             }
         });
 
+        cancelAllUpdatesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                controller.cancelTaskUpdates(taskUpdateObserver);
+            }
+        });
     }
 
 

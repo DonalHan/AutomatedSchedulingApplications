@@ -81,9 +81,17 @@ public class TaskRepo
             {
                 iterator.remove();
                 isDeleted = true; //validated
+                for (TaskTracker tracker : taskUpdateTracker) //iterating through the task trackers
+                {
+                    if (tracker.getTaskId() == task.getId()) //if any of the tasks updated matches a task ID that's being tracked. . .
+                    {
+                        unregisterTaskTracker(tracker); // remove the deleted task from the tracker list
+                    }
+                }
                 break;
             }
         }
+
 
         return isDeleted; //return validator
     }
@@ -190,20 +198,6 @@ public class TaskRepo
         return null;
     }
 
-//    @Override
-//    public String toString() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("ID: ").append(getId()).append(", Name: ").append(getName()).append("\n");
-//        sb.append("Description: ").append(getDescription()).append("\n");
-//        sb.append("Assigned User: ").append(getAssignedUser()).append(", Due Date: ");
-//
-//        Date dueDate = getDueDate();
-//        sb.append(dueDate.getMonth()).append("/")
-//                .append(dueDate.getDay()).append("/")
-//                .append(dueDate.getYear());
-//
-//        return sb.toString();
-//    }
 }
 
 
