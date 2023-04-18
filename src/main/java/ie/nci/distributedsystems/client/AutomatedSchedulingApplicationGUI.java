@@ -11,6 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,9 +66,22 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
     public AutomatedSchedulingApplicationGUI (ControllerGUI controller)
     {
         this.controller = controller;
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //exit the application on closing the interface
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); //exit the application on closing the interface
         this.setContentPane(ASAMain); //set the content pain as the ASAmain
-        this.pack(); //back the content within the pain
+        this.pack(); //pack the content within the pain
+
+        // Add the WindowListener
+        this.addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                super.windowClosing(e);
+                controller.shutdownChannels(); // Call the shutdownChannels() method
+                dispose(); // Close the window
+                System.exit(0); // End the program
+            }
+        });
         addTaskButton.addActionListener(new ActionListener() { //functionality responsible for adding a task to the task repo
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,7 +145,17 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
         getTaskButton.addActionListener(new ActionListener() { //functionality for getting tasks by ID
             @Override
             public void actionPerformed(ActionEvent e) {
-                int taskId = Integer.parseInt(taskIdField.getText()); //obtaining the id passed in by the user
+                int taskId;
+                try
+                {
+                    taskId = Integer.parseInt(taskIdField.getText());
+                }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(ASAMain, "Please enter only numbers.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    return; // Stop processing and return from the function
+                }
+
                 GetTaskResponse getTaskResponse = controller.getTask(taskId); //  passing in the ID into the controller function to activate the service
 
                 if (getTaskResponse != null) //if we get a response
@@ -139,9 +164,7 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                     String response = taskInfo(taskResponse); //call the custom print method below
                     //Printing the response using a pop-up window
                     JOptionPane.showMessageDialog(ASAMain, response, "Task Information", JOptionPane.INFORMATION_MESSAGE); //print in a pop-up window
-                }
-                else
-                {
+                } else {
                     //Printing the response using a pop-up window if the controller returns null
                     JOptionPane.showMessageDialog(ASAMain, "Task with ID " + taskId + " not found", "Task Not Found", JOptionPane.ERROR_MESSAGE);
                 }
@@ -150,8 +173,18 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
         });
         deleteTaskButton.addActionListener(new ActionListener() { //functionality for deleting a task from the repo
             @Override
-            public void actionPerformed(ActionEvent e) {
-                int taskId = Integer.parseInt(deleteTaskIdTextField.getText()); //obtaining the id from the text field
+            public void actionPerformed(ActionEvent e)
+            {
+                int taskId;
+                try
+                {
+                    taskId = Integer.parseInt(deleteTaskIdTextField.getText());
+                }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(ASAMain, "Please enter only numbers.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    return; // Stop processing and return from the function
+                }
                 DeleteTaskResponse response = controller.deleteTask(taskId); //passing the id to controller which activates the service
 
                 String output = response.getStatus();
@@ -170,8 +203,17 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
 
                 for (String stringId : splitInput) //populate the integer array
                 {
-                    int taskId = Integer.parseInt(stringId.trim()); //parse the strings into ints and trim any white spaces
-                    idsToDelete.add(taskId); //add to the list
+                    try //error handling in case a string is passed in, instead of an int
+                    {
+                        int taskId = Integer.parseInt(stringId.trim()); //parse the strings into ints and trim any white spaces
+                        idsToDelete.add(taskId); //add to the list
+                    }
+                    catch (NumberFormatException ex) //catch any errors
+                    {
+                        JOptionPane.showMessageDialog(ASAMain, "Please enter only numbers separated by commas.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                        return; //Stop the process
+                    }
+
                 }
 
                 try
@@ -194,10 +236,18 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 String[] splitInput = idInputs.split(","); //splitting the ids into an array
                 ArrayList<Integer> idsToTrack = new ArrayList<>(); //declaring an int array to store the split ids
 
-                for (String stringId : splitInput) //parsing the strings and adding them to the array
+                for (String stringId : splitInput)
                 {
-                    int taskId = Integer.parseInt(stringId.trim()); //parse the strings and trim the white space
-                    idsToTrack.add(taskId); //add the ints to the array
+                    try
+                    {
+                        int taskId = Integer.parseInt(stringId.trim());
+                        idsToTrack.add(taskId);
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        JOptionPane.showMessageDialog(ASAMain, "Please enter only numbers separated by commas.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                        return; // Stop processing and return from the function
+                    }
                 }
 
                 for (int i = 0; i < idsToTrack.size();) // A for loop that validates if the user input is in the list
@@ -242,17 +292,34 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 ArrayList<Integer> idsToUpdate = new ArrayList<>(); //declaring a list to store the new ints
                 List<Task> tasksToUpdate = new ArrayList<>(); //declaring a list ot obtain the tasks to update
 
+
                 for (String stringId : splitInput)  //populating the int array with the strings by parsing
                 {
-                    int taskId = Integer.parseInt(stringId.trim()); //parsing the strings to ints and trimming the white space
-                    idsToUpdate.add(taskId); //add to the list
+                    try
+                    {
+                        int taskId = Integer.parseInt(stringId.trim()); //parsing the strings to ints and trimming the white space
+                        idsToUpdate.add(taskId); //add to the list
+                    }
+                    catch (NumberFormatException ex) //error handling in case the user passes in a string
+                    {
+                        JOptionPane.showMessageDialog(ASAMain, "Please enter only numbers.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                        return; // Stop processing and return from the function
+                    }
+
                 }
 
                 for (int taskId : idsToUpdate) //Obtaining the tasks to update and populating the previous task list
                 {
                     GetTaskResponse response = controller.getTask(taskId); //calling the controller to get the tasks
-                    Task task = response.getTask(); //unpacking the response and grabbing the task
 
+                    if (response == null) // Check if the task exists in the list, if not a pop up window informs the user
+                    {
+                        String message = "Task ID: " + taskId + " is not in the list";
+                        JOptionPane.showMessageDialog(ASAMain, message, "Task Information", JOptionPane.INFORMATION_MESSAGE);
+                        continue; // Skip to the next task ID
+                    }
+
+                    Task task = response.getTask(); //unpacking the response and grabbing the task
                     // Calling the custom-made panel for updating each task and passing the task into it
                     Task updatedTask = showUpdateTaskDialog(task);
 

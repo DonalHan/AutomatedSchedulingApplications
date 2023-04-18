@@ -34,24 +34,29 @@ public class ControllerGUI
     private static TaskDeletionServiceGrpc.TaskDeletionServiceStub asyncStubDeletion; //async task deletion stub
     private static TaskUpdateServiceGrpc.TaskUpdateServiceStub asyncStubUpdate; //unary task management stub
     private static boolean isConnected = false; //validator to check is the channel and server are connected
+    private static ManagedChannel channel;
+    private static List<ManagedChannel> managedChannels = new ArrayList<>();
 
 
 
-/*Main method responsible for starting up the GUI and linking all the functionality and communication*/
+
+    /*Main method responsible for starting up the GUI and linking all the functionality and communication*/
     public static void main(String[] args) throws InterruptedException, IOException
     {
         /*jmDNS Implementation----------------------------------------------------------------------------------------*/
         JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost()); // creating a jmdns instance
 
-        GrpcServiceListener grpcServiceListener = new GrpcServiceListener(); //instantiating a custom listener for each service(Method Below)
+        GrpcServiceListener taskManagementListener = new GrpcServiceListener("_taskmanagement._tcp.local."); //instantiating a custom listener for task management service
+        GrpcServiceListener taskUpdateListener = new GrpcServiceListener("_taskupdate._tcp.local."); //instantiating a custom listener for task update service
+        GrpcServiceListener taskDeletionListener = new GrpcServiceListener("_taskdeletion._tcp.local."); //instantiating a custom listener for task deletion service
 
-        jmdns.addServiceListener("_taskmanagement._tcp.local.", grpcServiceListener); //adding a listener for task management service
-        jmdns.addServiceListener("_taskupdate._tcp.local.", grpcServiceListener); //adding a listener for task update service
-        jmdns.addServiceListener("_taskdeletion._tcp.local.", grpcServiceListener); //adding a listener for deletion service
+        jmdns.addServiceListener(taskManagementListener.getServiceType(), taskManagementListener); //adding a listener for task management service
+        jmdns.addServiceListener(taskUpdateListener.getServiceType(), taskUpdateListener); //adding a listener for task update service
+        jmdns.addServiceListener(taskDeletionListener.getServiceType(), taskDeletionListener); //adding a listener for deletion service
 
         while (!isConnected) //using the validator to wait for the connections
         {
-            Thread.sleep(1000); //wait ten seconds
+            Thread.sleep(5000); //wait 5 seconds
         }
 
 
@@ -79,6 +84,8 @@ public class ControllerGUI
             }
         });
 
+        shutdownChannels(); //once the interface is closed, shutdown all the channels
+
     }
 
 
@@ -86,9 +93,12 @@ public class ControllerGUI
     private static void setupGrpcConnection(ServiceInfo serviceInfo) throws InterruptedException
     {
         // Creating the ManagedChannel, the port and name is passed in from the discovered jmDNS services
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(serviceInfo.getInetAddresses()[0].getHostAddress(), serviceInfo.getPort())
+        channel = ManagedChannelBuilder.forAddress(serviceInfo.getInetAddresses()[0].getHostAddress(), serviceInfo.getPort())
                 .usePlaintext()
                 .build();
+
+        // Add the channel to the list
+        managedChannels.add(channel);
 
         // Setting up the gRPC stubs using the channel
         blockingStub = TaskManagementServiceGrpc.newBlockingStub(channel);
@@ -100,11 +110,46 @@ public class ControllerGUI
         isConnected = true; //The validator is now true
     }
 
+    public static void shutdownChannels()
+    {
+        for (ManagedChannel channel : managedChannels)
+        {
+            channel.shutdown();
+            try {
+                if (!channel.awaitTermination(5, TimeUnit.SECONDS))
+                {
+                    channel.shutdownNow();
+                    if (!channel.awaitTermination(5, TimeUnit.SECONDS))
+                    {
+                        System.err.println("Channel did not terminate");
+                    }
+                }
+            }
+            catch (InterruptedException e)
+            {
+                channel.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
 
 
-/*Custom service listener class for jmDNS-----------------------------------------------------------------------------*/
+
+
+    /*Custom service listener class for jmDNS-----------------------------------------------------------------------------*/
     static class GrpcServiceListener implements ServiceListener //uses the service listener methods to discover the jmDNS services
     {
+        private String serviceType; // storing the service typ
+
+        public GrpcServiceListener(String serviceType) //constructor for each service listener that gets passed in
+        {
+            this.serviceType = serviceType;
+        }
+
+        public String getServiceType() //getter for the service type
+        {
+            return serviceType;
+        }
         @Override
         public void serviceAdded(ServiceEvent serviceEvent) //discovers the services
         {
@@ -124,14 +169,18 @@ public class ControllerGUI
             System.out.println("Service resolved: " + serviceEvent.getInfo()); //print that a service has been resolved
             ServiceInfo serviceInfo = serviceEvent.getInfo(); // retrieve the info from the event being passed in
 
-            try //attempt to set up a gRPC connection using the jmDNS discovered info
+            if (serviceInfo.getType().equals(serviceType))
             {
-                setupGrpcConnection(serviceInfo); //passing the info into the previous connection setup method (above)
+                try //attempt to set up a gRPC connection using the jmDNS discovered info
+                {
+                    setupGrpcConnection(serviceInfo); //passing the info into the previous connection setup method (above)
+                }
+                catch (InterruptedException e) //if there's any interruption exceptions, catch them during the setup process
+                {
+                    throw new RuntimeException(e); //throw the caught exception
+                }
             }
-            catch (InterruptedException e) //if there's any interruption exceptions, catch them during the setup proccess
-            {
-                throw new RuntimeException(e); //throw the caught exception
-            }
+
         }
     }
 
