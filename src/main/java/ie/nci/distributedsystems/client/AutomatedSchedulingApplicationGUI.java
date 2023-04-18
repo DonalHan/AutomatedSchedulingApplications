@@ -72,7 +72,7 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String taskName = taskNameTextField.getText(); //getting the name inputted by the user
                 String taskDescription = taskDescTextField.getText(); //getting the description passed in by the user
-                String assignedUser = taskWorkerTextField.getText(); //getting the worker passed in my the user
+                String assignedUser = taskWorkerTextField.getText(); //getting the worker passed in by the user
 
                 //Obtaining the date passed in by the user
                 int day = Integer.parseInt(addTaskDayComboBox.getSelectedItem().toString());
@@ -120,6 +120,7 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 for(Task task: tasksOnDate)
                 {
                     taskOutput.append(taskInfo(task)); //calling the custom task info print below and appending to the string builder
+                    taskOutput.append("\n");
                 }
                 //Printing the response using a pop-up window
                 JOptionPane.showMessageDialog(ASAMain, taskOutput, "Tasks On Date", JOptionPane.INFORMATION_MESSAGE);
@@ -191,16 +192,44 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String idInputs = getTaskUpdateTextField.getText(); //getting the ID's from the text field
                 String[] splitInput = idInputs.split(","); //splitting the ids into an array
-                ArrayList<Integer> idsToTrack = new ArrayList<>(); //declaring an int array to stor the split ids
+                ArrayList<Integer> idsToTrack = new ArrayList<>(); //declaring an int array to store the split ids
+
                 for (String stringId : splitInput) //parsing the strings and adding them to the array
                 {
                     int taskId = Integer.parseInt(stringId.trim()); //parse the strings and trim the white space
                     idsToTrack.add(taskId); //add the ints to the array
                 }
 
-                taskUpdateObserver = controller.getTaskUpdates(idsToTrack, ASAMain); //passing to the controller the array list to track and the GUI components to handle update responses
+                for (int i = 0; i < idsToTrack.size();) // A for loop that validates if the user input is in the list
+                {
+                    GetTaskResponse getTaskResponse = controller.getTask(idsToTrack.get(i)); //checking if the ID is in the list
+                    if (getTaskResponse == null) //If it is not, notify the user and continue subscribing to the rest of the list
+                    {
+                        String response = "Task ID: " + idsToTrack.get(i) + " is not in the list"; //Building a response
+                        JOptionPane.showMessageDialog(ASAMain, response, "Task Information", JOptionPane.INFORMATION_MESSAGE); //popup window
+                        idsToTrack.remove(i); //remove the id that is not in the list before subscribing the user
+                    }
+                    else
+                    {
+                        i++; //move onto the next ID if the current ID is in the list
+                    }
+                }
 
+                //passing to the controller the array list to track and the GUI components to handle update responses
+                taskUpdateObserver = controller.getTaskUpdates(idsToTrack, ASAMain);
 
+                StringBuilder confirmation = new StringBuilder(); //A string builder to notify the user of the current subscriptions
+                if (!idsToTrack.isEmpty()) //If the list of ID's to track is not empty
+                {
+                    confirmation.append("Notifications on for tasks: " + "\n"); //Inform the use of what notifications are currently being tracked
+                    for (int ids : idsToTrack)
+                    {
+                        confirmation.append(ids + "\n"); //append the id
+                    }
+
+                    String status = confirmation.toString(); //store the final output
+                    JOptionPane.showMessageDialog(ASAMain, status, "Task Notifications", JOptionPane.INFORMATION_MESSAGE); //print in a pop-up window
+                } // End of the condition
                 getTaskUpdateTextField.setText(""); //reset the fields
             }
         });
@@ -238,7 +267,7 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 {
                    String status = controller.updateTasks(tasksToUpdate); //Finally pass the newly updated tasks to the controller to activate the update tasks service
                     //Printing the response using a pop-up window
-                   JOptionPane.showMessageDialog(ASAMain, status, "Delete Task", JOptionPane.INFORMATION_MESSAGE);
+                   JOptionPane.showMessageDialog(ASAMain, status, "Update Task", JOptionPane.INFORMATION_MESSAGE);
                 }
                 catch (InterruptedException ex) //catch any errors that might happen while the service is running
                 {

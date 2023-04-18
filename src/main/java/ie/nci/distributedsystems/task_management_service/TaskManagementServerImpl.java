@@ -49,28 +49,29 @@ public class TaskManagementServerImpl extends TaskManagementServiceGrpc.TaskMana
         responseObserver.onCompleted(); //Completing the service
     }
 
+    /*A service function that is responsible for obtaining tasks based on ID*/
     @Override
     public void getTask(GetTaskRequest request, StreamObserver<GetTaskResponse> responseObserver)
     {
-        int taskId = request.getTaskId();
-        Task task = taskRepository.getTask(taskId);
+        int taskId = request.getTaskId(); //storing the ID
+        Task task = taskRepository.getTask(taskId); //Getting the task from the repo
 
-        if (task != null)
+        if (task != null) //If it exists
         {
-            GetTaskResponse getTaskResponse = GetTaskResponse.newBuilder()
+            GetTaskResponse getTaskResponse = GetTaskResponse.newBuilder() //build a response and add the task
                     .setTask(task)
                     .build();
 
-            responseObserver.onNext(getTaskResponse);
+            responseObserver.onNext(getTaskResponse); //send it to client
         }
-        else
+        else //if the task is not in the list
         {
-            responseObserver.onError(Status.NOT_FOUND
+            responseObserver.onError(Status.NOT_FOUND //call an onError function with the description
                     .withDescription("Task with ID " + taskId + " not found")
                     .asRuntimeException());
         }
 
-        responseObserver.onCompleted();
+        responseObserver.onCompleted(); //complete service
     }
 
 

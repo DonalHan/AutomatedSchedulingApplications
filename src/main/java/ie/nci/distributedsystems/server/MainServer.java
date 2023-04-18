@@ -17,34 +17,34 @@ public class MainServer
     {
         TaskRepo taskRepository = new TaskRepo(); //Declaring a new task repository
 
-        // Declaring service implementations with the shared task repository
+        // Declaring service implementations with the shared task repository as the paramter
         TaskManagementServerImpl taskManagementService = new TaskManagementServerImpl(taskRepository);
         TaskDeletionServiceImpl taskDeletionService = new TaskDeletionServiceImpl(taskRepository);
         TaskUpdateServiceImpl taskUpdateService = new TaskUpdateServiceImpl(taskRepository);
 
-        Server server = ServerBuilder.forPort(50021)
-                .addService(taskManagementService)
-                .addService(taskDeletionService)
-                .addService(taskUpdateService)
-                .build();
+        Server server = ServerBuilder.forPort(50021) //Building a server for each service to be added to
+                .addService(taskManagementService) // adding the task management service to the server
+                .addService(taskDeletionService) //adding the task deletion service to the server
+                .addService(taskUpdateService) //adding the task update service to the server
+                .build();//building the server
 
-        server.start();
+        server.start(); //start the server
 
-        // Create a JmDNS instance
-        JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
 
-        // Create a ServiceInfo instance for each service
+        JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost()); // Declaring a JmDNS instance
+
+        // Create  ServiceInfo instances (type,name and unified port) for each service
         ServiceInfo taskManagementServiceInfo = ServiceInfo.create("_taskmanagement._tcp.local.", "TaskManagementService", 50021, "");
         ServiceInfo taskDeletionServiceInfo = ServiceInfo.create("_taskdeletion._tcp.local.", "TaskDeletionService", 50021, "");
         ServiceInfo taskUpdateServiceInfo = ServiceInfo.create("_taskupdate._tcp.local.", "TaskUpdateService", 50021, "");
 
-        // Register the services with JmDNS
+        // Register each of the services with the jmDNS
         jmdns.registerService(taskManagementServiceInfo);
         jmdns.registerService(taskDeletionServiceInfo);
         jmdns.registerService(taskUpdateServiceInfo);
 
-        System.out.println("Server started on port " + server.getPort());
-        server.awaitTermination();
+        System.out.println("Server started on port " + server.getPort()); //Inform the user the server has started
+        server.awaitTermination(); //awaits a shutdown call
     }
 }
 
