@@ -7,7 +7,6 @@ import ie.nci.distributedsystems.task_management_service.GetTaskResponse;
 import ie.nci.distributedsystems.task_management_service.Task;
 import ie.nci.distributedsystems.task_update_service.GetTaskUpdatesRequest;
 import io.grpc.stub.StreamObserver;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,22 +14,23 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/*A class bound to the form that is responsible for all the GUI components and their button events*/
 public class AutomatedSchedulingApplicationGUI extends JFrame {
-    public JPanel ASAMain;
-    private JTabbedPane tabbedPane1;
+    public JPanel ASAMain; //declaring the main panel
+    private JTabbedPane tabbedPane1; //first tab for a service
     private JLabel addTaskLabel;
-    private JTextField taskDescTextField;
-    private JTextField taskWorkerTextField;
-    private JTextField taskNameTextField;
-    private JButton addTaskButton;
+    private JTextField taskDescTextField; //takes in the task description for add task function
+    private JTextField taskWorkerTextField; //takes in the task worker for add task function
+    private JTextField taskNameTextField; //takes in the task name for add task function
+    private JButton addTaskButton; //Button responsible for calling the add task functionality from the controller
     private JLabel taskNameLabel;
     private JLabel TaskDescLabel;
-    private JTextField taskIdField;
-    private JButton getTaskButton;
-    private JComboBox dayComboBox;
-    private JComboBox monthComboBox;
-    private JComboBox yearComboBox;
-    private JButton getTaskDateButton;
+    private JTextField taskIdField; //takes in the task ID for get task function
+    private JButton getTaskButton; //Button responsible for calling the get task functionality from the controller
+    private JComboBox dayComboBox; //takes in the task day for get task function
+    private JComboBox monthComboBox; //takes in the task month for get task function
+    private JComboBox yearComboBox; //takes in the task year for get task function
+    private JButton getTaskDateButton; //Button responsible for calling the get task by date functionality from the controller
     private JLabel taskIdLabel;
     private JLabel getTaskByIDLabel;
     private JLabel getTaskByDateLabel;
@@ -39,185 +39,196 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
     private JLabel yearLabel;
     private JLabel deleteTaskLabel;
     private JLabel taskIDLabel;
-    private JTextField deleteTaskIdTextField;
-    private JButton deleteTaskButton;
-    private JTextField deleteMultTaskIdTextField;
+    private JTextField deleteTaskIdTextField; //takes in the task ID for delete task function
+    private JButton deleteTaskButton; //Button responsible for calling delete task functionality from the controller
+    private JTextField deleteMultTaskIdTextField; //takes in the task ID for delete multiple task function
     private JLabel deleteMultipleTasksLabel;
     private JLabel seperateTaskIDSLabel;
     private JLabel taskIDSLabel;
-    private JButton deleteTasksButton;
-    private JComboBox addTaskDayComboBox;
-    private JComboBox addTaskMonthComboBox;
-    private JComboBox addTaskYearComboBox;
-    private JTextField updateTaskIdField;
-    private JButton updateTaskButton;
+    private JButton deleteTasksButton; //Button responsible for calling delete multiple task functionality from the controller
+    private JComboBox addTaskDayComboBox; //takes in the task day for add task function
+    private JComboBox addTaskMonthComboBox; //takes in the task month for add task function
+    private JComboBox addTaskYearComboBox; //takes in the task year for add task function
+    private JTextField updateTaskIdField; //takes in the ID for tasks to be updated
+    private JButton updateTaskButton; //Button responsible for calling the update task functionality fromt he controller
     private JLabel getTaskUpdateLabel;
-    private JTextField getTaskUpdateTextField;
-    private JButton getTaskUpdateButton;
+    private JTextField getTaskUpdateTextField; //takes in task ID's to track
+    private JButton getTaskUpdateButton; //button responsible for calling the get task updates functionality in the controller
     private JLabel updateTaskIDLabel;
-    private JButton cancelAllUpdatesButton;
+    private JButton cancelAllUpdatesButton; //Cancels all the trackers currently being tracked
 
-    private ControllerGUI controller;
-    private StreamObserver<GetTaskUpdatesRequest> taskUpdateObserver;
+    private ControllerGUI controller; //declaring a controller to call the functionality
+    private StreamObserver<GetTaskUpdatesRequest> taskUpdateObserver; //declaring a global stream observer so tracking can occur
 
+     /*Constructor that takes in as a parameter the controller functionality for the buttons----------------------------*/
     public AutomatedSchedulingApplicationGUI (ControllerGUI controller)
     {
         this.controller = controller;
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setContentPane(ASAMain);
-        this.pack();
-        addTaskButton.addActionListener(new ActionListener() {
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //exit the application on closing the interface
+        this.setContentPane(ASAMain); //set the content pain as the ASAmain
+        this.pack(); //back the content within the pain
+        addTaskButton.addActionListener(new ActionListener() { //functionality responsible for adding a task to the task repo
             @Override
             public void actionPerformed(ActionEvent e) {
-                String taskName = taskNameTextField.getText();
-                String taskDescription = taskDescTextField.getText();
-                String assignedUser = taskWorkerTextField.getText();
+                String taskName = taskNameTextField.getText(); //getting the name inputted by the user
+                String taskDescription = taskDescTextField.getText(); //getting the description passed in by the user
+                String assignedUser = taskWorkerTextField.getText(); //getting the worker passed in my the user
 
+                //Obtaining the date passed in by the user
                 int day = Integer.parseInt(addTaskDayComboBox.getSelectedItem().toString());
                 int month = Integer.parseInt(addTaskMonthComboBox.getSelectedItem().toString());
                 int year = Integer.parseInt(addTaskYearComboBox.getSelectedItem().toString());
 
-                Task task = Task.newBuilder()
+                Task task = Task.newBuilder() //building a task and populating it with the above fields
                         .setName(taskName)
                         .setDescription(taskDescription)
                         .setDueDate(Date.newBuilder().setYear(year).setMonth(month).setDay(day).build())
                         .setAssignedUser(assignedUser)
                         .build();
 
-                AddTaskResponse addTaskResponse = controller.addTask(task);
+                AddTaskResponse addTaskResponse = controller.addTask(task); //passing the request to the controller which activates the service
+                //Printing the response using a pop-up window
                 JOptionPane.showMessageDialog(ASAMain, "Task added successfully! Task ID: " + addTaskResponse.getTaskId(), "Task Added", JOptionPane.INFORMATION_MESSAGE);
 
             }
         });
-        getTaskDateButton.addActionListener(new ActionListener() {
+        getTaskDateButton.addActionListener(new ActionListener() { //functionality for getting tasks by Date
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Obtaining the date passed in by the user
                 int day = Integer.parseInt(dayComboBox.getSelectedItem().toString());
                 int month = Integer.parseInt(monthComboBox.getSelectedItem().toString());
                 int year = Integer.parseInt(yearComboBox.getSelectedItem().toString());
 
-                Date dateRequest = Date.newBuilder()
+                Date dateRequest = Date.newBuilder() //building a date request with the above info
                         .setDay(day)
                         .setMonth(month)
                         .setYear(year)
                         .build();
 
-                List<Task> tasksOnDate = new ArrayList<>();
+                List<Task> tasksOnDate = new ArrayList<>(); //declaring a list ot store the dates
                 try
                 {
-                    tasksOnDate = controller.getTasksByDate(dateRequest);
+                    tasksOnDate = controller.getTasksByDate(dateRequest); //populating the list by calling the service and passing in the previous date constructed
                 }
-                catch (InterruptedException ex)
+                catch (InterruptedException ex) //error handling while the service is being conducted
                 {
                     throw new RuntimeException(ex);
                 }
-                StringBuilder taskOutput = new StringBuilder();
+                StringBuilder taskOutput = new StringBuilder(); //storing the result in a string builder to print
 
                 for(Task task: tasksOnDate)
                 {
-                    taskOutput.append(taskInfo(task));
+                    taskOutput.append(taskInfo(task)); //calling the custom task info print below and appending to the string builder
                 }
+                //Printing the response using a pop-up window
                 JOptionPane.showMessageDialog(ASAMain, taskOutput, "Tasks On Date", JOptionPane.INFORMATION_MESSAGE);
 
             }
         });
-        getTaskButton.addActionListener(new ActionListener() {
+        getTaskButton.addActionListener(new ActionListener() { //functionality for getting tasks by ID
             @Override
             public void actionPerformed(ActionEvent e) {
-                int taskId = Integer.parseInt(taskIdField.getText());
-                GetTaskResponse getTaskResponse = controller.getTask(taskId);
+                int taskId = Integer.parseInt(taskIdField.getText()); //obtaining the id passed in by the user
+                GetTaskResponse getTaskResponse = controller.getTask(taskId); //  passing in the ID into the controller function to activate the service
 
-                if (getTaskResponse != null)
+                if (getTaskResponse != null) //if we get a response
                 {
-                    Task taskResponse = getTaskResponse.getTask();
-                    String response = taskInfo(taskResponse);
-                    JOptionPane.showMessageDialog(ASAMain, response, "Task Information", JOptionPane.INFORMATION_MESSAGE);
+                    Task taskResponse = getTaskResponse.getTask(); //unpack the response and get the task
+                    String response = taskInfo(taskResponse); //call the custom print method below
+                    //Printing the response using a pop-up window
+                    JOptionPane.showMessageDialog(ASAMain, response, "Task Information", JOptionPane.INFORMATION_MESSAGE); //print in a pop-up window
                 }
                 else
                 {
+                    //Printing the response using a pop-up window if the controller returns null
                     JOptionPane.showMessageDialog(ASAMain, "Task with ID " + taskId + " not found", "Task Not Found", JOptionPane.ERROR_MESSAGE);
                 }
 
             }
         });
-        deleteTaskButton.addActionListener(new ActionListener() {
+        deleteTaskButton.addActionListener(new ActionListener() { //functionality for deleting a task from the repo
             @Override
             public void actionPerformed(ActionEvent e) {
-                int taskId = Integer.parseInt(deleteTaskIdTextField.getText());
-                DeleteTaskResponse response = controller.deleteTask(taskId);
+                int taskId = Integer.parseInt(deleteTaskIdTextField.getText()); //obtaining the id from the text field
+                DeleteTaskResponse response = controller.deleteTask(taskId); //passing the id to controller which activates the service
 
                 String output = response.getStatus();
+                //Printing the response using a pop-up window
                 JOptionPane.showMessageDialog(ASAMain, response, "Delete Task", JOptionPane.INFORMATION_MESSAGE);
 
             }
         });
-        deleteTasksButton.addActionListener(new ActionListener() {
+        deleteTasksButton.addActionListener(new ActionListener() { //functionality responsible for deleting multiple tasks
             @Override
             public void actionPerformed(ActionEvent e) {
-                String idInputs = deleteMultTaskIdTextField.getText();
-                String[] splitInput = idInputs.split(",");
+                String idInputs = deleteMultTaskIdTextField.getText(); //obtaining the ID's from the text field
+                String[] splitInput = idInputs.split(","); //Splitting them into individual components in an array
 
-                ArrayList<Integer> idsToDelete = new ArrayList<>();
+                ArrayList<Integer> idsToDelete = new ArrayList<>(); //declaring a list to hold the parsed strings into intgers
 
-                for (String stringId : splitInput)
+                for (String stringId : splitInput) //populate the integer array
                 {
-                    int taskId = Integer.parseInt(stringId.trim());
-                    idsToDelete.add(taskId);
+                    int taskId = Integer.parseInt(stringId.trim()); //parse the strings into ints and trim any white spaces
+                    idsToDelete.add(taskId); //add to the list
                 }
 
                 try
                 {
-                    String output = controller.deleteMultipleTasks(idsToDelete);
+                    String output = controller.deleteMultipleTasks(idsToDelete); //attempt to pass the list to the controller which activates the service and deletes the tasks
+                    //Printing the response using a pop-up window
                     JOptionPane.showMessageDialog(ASAMain, output, "Delete Task", JOptionPane.INFORMATION_MESSAGE);
                 }
-                catch (InterruptedException ex)
+                catch (InterruptedException ex) //catch any errors while the service is being conducted
                 {
-                    throw new RuntimeException(ex);
+                    throw new RuntimeException(ex);// throw the errors
                 }
 
             }
         });
-        getTaskUpdateButton.addActionListener(new ActionListener() {
+        getTaskUpdateButton.addActionListener(new ActionListener() { //functionality responsible for subscribing users to task updates
             @Override
             public void actionPerformed(ActionEvent e) {
-                String idInputs = getTaskUpdateTextField.getText();
-                String[] splitInput = idInputs.split(",");
-                ArrayList<Integer> idsToTrack = new ArrayList<>();
-                for (String stringId : splitInput)
+                String idInputs = getTaskUpdateTextField.getText(); //getting the ID's from the text field
+                String[] splitInput = idInputs.split(","); //splitting the ids into an array
+                ArrayList<Integer> idsToTrack = new ArrayList<>(); //declaring an int array to stor the split ids
+                for (String stringId : splitInput) //parsing the strings and adding them to the array
                 {
-                    int taskId = Integer.parseInt(stringId.trim());
-                    idsToTrack.add(taskId);
+                    int taskId = Integer.parseInt(stringId.trim()); //parse the strings and trim the white space
+                    idsToTrack.add(taskId); //add the ints to the array
                 }
 
-                taskUpdateObserver = controller.getTaskUpdates(idsToTrack, ASAMain);
+                taskUpdateObserver = controller.getTaskUpdates(idsToTrack, ASAMain); //passing to the controller the array list to track and the GUI components to handle update responses
 
 
-                getTaskUpdateTextField.setText("");
+                getTaskUpdateTextField.setText(""); //reset the fields
             }
         });
-        updateTaskButton.addActionListener(new ActionListener() {
+        updateTaskButton.addActionListener(new ActionListener() { //Functionality for updating multiple tasks
             @Override
             public void actionPerformed(ActionEvent e) {
-                String idInputs = updateTaskIdField.getText(); // Storing the input task
-                String[] splitInput = idInputs.split(",");
+                String idInputs = updateTaskIdField.getText(); // Storing the input task from the text field
+                String[] splitInput = idInputs.split(","); //splitting the inputs into an array
 
-                ArrayList<Integer> idsToUpdate = new ArrayList<>();
-                List<Task> tasksToUpdate = new ArrayList<>();
+                ArrayList<Integer> idsToUpdate = new ArrayList<>(); //declaring a list to store the new ints
+                List<Task> tasksToUpdate = new ArrayList<>(); //declaring a list ot obtain the tasks to update
 
-                for (String stringId : splitInput) {
-                    int taskId = Integer.parseInt(stringId.trim());
-                    idsToUpdate.add(taskId);
+                for (String stringId : splitInput)  //populating the int array with the strings by parsing
+                {
+                    int taskId = Integer.parseInt(stringId.trim()); //parsing the strings to ints and trimming the white space
+                    idsToUpdate.add(taskId); //add to the list
                 }
 
-                for (int taskId : idsToUpdate) {
-                    // Retrieve the task details
-                    GetTaskResponse response = controller.getTask(taskId);
-                    Task task = response.getTask();
+                for (int taskId : idsToUpdate) //Obtaining the tasks to update and populating the previous task list
+                {
+                    GetTaskResponse response = controller.getTask(taskId); //calling the controller to get the tasks
+                    Task task = response.getTask(); //unpacking the response and grabbing the task
 
-                    // Call the showUpdateTaskDialog method
+                    // Calling the custom-made panel for updating each task and passing the task into it
                     Task updatedTask = showUpdateTaskDialog(task);
 
-                    if (updatedTask != null) {
+                    if (updatedTask != null)  //if the task is not null add it to the list
+                    {
                         tasksToUpdate.add(updatedTask);
                     }
                 }
@@ -225,26 +236,27 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 // Pass the updated tasks to the controller to update the task repository
                 try
                 {
-                   String status = controller.updateTasks(tasksToUpdate);
+                   String status = controller.updateTasks(tasksToUpdate); //Finally pass the newly updated tasks to the controller to activate the update tasks service
+                    //Printing the response using a pop-up window
                    JOptionPane.showMessageDialog(ASAMain, status, "Delete Task", JOptionPane.INFORMATION_MESSAGE);
                 }
-                catch (InterruptedException ex)
+                catch (InterruptedException ex) //catch any errors that might happen while the service is running
                 {
-                    throw new RuntimeException(ex);
+                    throw new RuntimeException(ex); //throw the error
                 }
             }
         });
 
-        cancelAllUpdatesButton.addActionListener(new ActionListener() {
+        cancelAllUpdatesButton.addActionListener(new ActionListener() { //functionality responsible for cancelling all the subscriptions to tasks
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                controller.cancelTaskUpdates(taskUpdateObserver);
+                controller.cancelTaskUpdates(taskUpdateObserver); //call the controllers methods to close the stream observer for all tasks
             }
         });
     }
 
-
+    /*Custom method responsible for printing the task responses to a JOptionPane--------------------------------------*/
     public static String taskInfo(Task task)
     {
         return "Task ID: " + task.getId() + "\n"
@@ -256,61 +268,63 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                 + task.getDueDate().getYear() + "\n";
     }
 
-    private Task showUpdateTaskDialog(Task task) {
-        // Create custom panel for JOptionPane
-        JPanel updatePanel = new JPanel();
-        updatePanel.setLayout(new GridLayout(0, 2));
+    /*A custom panel that is used to provide fields to display and update tasks for the user to manipulate------------*/
+    private Task showUpdateTaskDialog(Task task)
+    {
 
-        // Add components to the custom panel and initialize with task data
+        JPanel updatePanel = new JPanel(); // Creating a custom panel for JOptionPane
+        updatePanel.setLayout(new GridLayout(0, 2)); //setting the layout
+
+        // Adding the components to the custom panel and populating the fields with task data
         updatePanel.add(new JLabel("Task ID: "));
-        JTextField updateTaskIdField = new JTextField(String.valueOf(task.getId()));
-        updatePanel.add(updateTaskIdField);
+        JTextField updateTaskIdField = new JTextField(String.valueOf(task.getId())); //Creating a text field and populating it with the task value
+        updatePanel.add(updateTaskIdField); //Add to panel
 
         updatePanel.add(new JLabel("Task Name:"));
-        JTextField updateTaskNameField = new JTextField(task.getName());
-        updatePanel.add(updateTaskNameField);
+        JTextField updateTaskNameField = new JTextField(task.getName()); //Creating a text field and populating it with the task value
+        updatePanel.add(updateTaskNameField); //Add to panel
 
         updatePanel.add(new JLabel("Task Description:"));
-        JTextField updateTaskDescTextField = new JTextField(task.getDescription());
-        updatePanel.add(updateTaskDescTextField);
+        JTextField updateTaskDescTextField = new JTextField(task.getDescription()); //Creating a text field and populating it with the task value
+        updatePanel.add(updateTaskDescTextField); //Add to panel
 
         updatePanel.add(new JLabel("Assigned Worker:"));
-        JTextField updateTaskWorkerTextField = new JTextField(task.getAssignedUser());
-        updatePanel.add(updateTaskWorkerTextField);
+        JTextField updateTaskWorkerTextField = new JTextField(task.getAssignedUser()); //Creating a text field and populating it with the task value
+        updatePanel.add(updateTaskWorkerTextField); //Add to panel
 
         updatePanel.add(new JLabel("Due Date (Day):"));
-        JComboBox<Integer> updateTaskDayComboBox = new JComboBox<>();
-        for (int i = 1; i <= 31; i++)
+        JComboBox<Integer> updateTaskDayComboBox = new JComboBox<>(); //Creating a text field and populating it with the task value
+        for (int i = 1; i <= 31; i++) //adding the values to the day combo box
         {
             updateTaskDayComboBox.addItem(i);
         }
         updateTaskDayComboBox.setSelectedItem(task.getDueDate().getDay());
-        updatePanel.add(updateTaskDayComboBox);
+        updatePanel.add(updateTaskDayComboBox); //Add to panel
 
         updatePanel.add(new JLabel("Due Date (Month):"));
-        JComboBox<Integer> updateTaskMonthComboBox = new JComboBox<>();
-        for (int i = 1; i <= 12; i++)
+        JComboBox<Integer> updateTaskMonthComboBox = new JComboBox<>(); //Creating a text field and populating it with the task value
+        for (int i = 1; i <= 12; i++) //adding the values to the month combo box
         {
             updateTaskMonthComboBox.addItem(i);
         }
         updateTaskMonthComboBox.setSelectedItem(task.getDueDate().getMonth());
-        updatePanel.add(updateTaskMonthComboBox);
+        updatePanel.add(updateTaskMonthComboBox); //Add to panel
 
         updatePanel.add(new JLabel("Due Date (Year):"));
-        JComboBox<Integer> updateTaskYearComboBox = new JComboBox<>();
-        for (int i = 2023; i <= 2030; i++)
+        JComboBox<Integer> updateTaskYearComboBox = new JComboBox<>(); //Creating a text field and populating it with the task value
+        for (int i = 2023; i <= 2030; i++) //adding the values to the year combo box
         {
             updateTaskYearComboBox.addItem(i);
         }
         updateTaskYearComboBox.setSelectedItem(task.getDueDate().getYear());
-        updatePanel.add(updateTaskYearComboBox);
+        updatePanel.add(updateTaskYearComboBox); //Add to panel
 
-        // Display JOptionPane with the custom panel
+        //Storing the choice of the user in a result variable
         int result = JOptionPane.showConfirmDialog(ASAMain, updatePanel, "Update Task", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        if (result == JOptionPane.OK_OPTION)
+        if (result == JOptionPane.OK_OPTION) //If the user presses ok
         {
-            // Retrieve input values and create a new task with the updated info
+            // Retrieve all of the new info in the text fields
             int taskId = Integer.parseInt(updateTaskIdField.getText());
             String taskName = updateTaskNameField.getText();
             String taskDesc = updateTaskDescTextField.getText();
@@ -319,6 +333,7 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
             int month = (int) updateTaskMonthComboBox.getSelectedItem();
             int year = (int) updateTaskYearComboBox.getSelectedItem();
 
+            //Create a new task with the text field information
             Task.Builder updatedTaskBuilder = task.toBuilder();
             updatedTaskBuilder
                     .setId(taskId)
@@ -327,12 +342,12 @@ public class AutomatedSchedulingApplicationGUI extends JFrame {
                     .setAssignedUser(taskWorker)
                     .setDueDate(Date.newBuilder().setYear(year).setMonth(month).setDay(day).build());
 
-            Task updatedTask = updatedTaskBuilder.build();
+            Task updatedTask = updatedTaskBuilder.build(); //build the new task
 
-            return updatedTask;
+            return updatedTask; //return the task
         }
 
-        return null;
+        return null; //if the user presses cancel, return null
     }
 
 
