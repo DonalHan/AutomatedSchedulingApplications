@@ -6,10 +6,7 @@ import ie.nci.distributedsystems.task_deletion_service.DeleteTasksRequest;
 import ie.nci.distributedsystems.task_deletion_service.TaskDeletionServiceGrpc;
 import ie.nci.distributedsystems.task_management_service.*;
 import ie.nci.distributedsystems.task_update_service.*;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
+import io.grpc.*;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,7 +53,7 @@ public class ControllerGUI
 
         while (!isConnected) //using the validator to wait for the connections
         {
-            Thread.sleep(5000); //wait 5 seconds
+            Thread.sleep(2000); //wait 2 seconds
         }
 
 
@@ -84,7 +81,7 @@ public class ControllerGUI
             }
         });
 
-        shutdownChannels(); //once the interface is closed, shutdown all the channels
+
 
     }
 
@@ -94,6 +91,7 @@ public class ControllerGUI
     {
         // Creating the ManagedChannel, the port and name is passed in from the discovered jmDNS services
         channel = ManagedChannelBuilder.forAddress(serviceInfo.getInetAddresses()[0].getHostAddress(), serviceInfo.getPort())
+                .intercept(new MetadataClientInterceptor())
                 .usePlaintext()
                 .build();
 
@@ -184,8 +182,31 @@ public class ControllerGUI
         }
     }
 
+/*This is a metadata method that is responsible for putting forth calls with user role information, in this case: admin */
+    static class MetadataClientInterceptor implements ClientInterceptor
+    {
+        @Override
+        public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
+                MethodDescriptor<ReqT, RespT> method, // Method descriptor for the gRPC request and responses being called
+                CallOptions callOptions, // Contains details such as deadlines
+                Channel next)
+        {
+            ClientCall<ReqT, RespT> call = next.newCall(method, callOptions); // Creates a new ClientCall with the method descriptor and call options
 
-/*Client side functioning utility methods for sending requests and handling responses to be connected to the GUI------*/
+            return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(call) // Returns a new instance of SimpleForwardingClientCall
+            {
+                @Override // Indicates the following method overrides a method from a superclass or interface
+                public void start(Listener<RespT> responseListener, Metadata headers)
+                {
+                    headers.put(Metadata.Key.of("user-role", Metadata.ASCII_STRING_MARSHALLER), "admin"); // Adds a custom metadata header to the headers object
+                    super.start(responseListener, headers); // Calls the start method of the superclass to delegate the rest of the work to the original ClientCall
+                }
+            };
+        }
+    }
+
+
+    /*Client side functioning utility methods for sending requests and handling responses to be connected to the GUI------*/
 
     // Adds task method, sends a task to the repository and receives the newly created ID for it
     public static AddTaskResponse addTask(Task task)

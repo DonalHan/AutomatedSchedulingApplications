@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 import java.net.InetAddress;
+import io.grpc.*;
 
 public class MainServer
 {
@@ -26,6 +27,7 @@ public class MainServer
                 .addService(taskManagementService) // adding the task management service to the server
                 .addService(taskDeletionService) //adding the task deletion service to the server
                 .addService(taskUpdateService) //adding the task update service to the server
+                .intercept(new MetadataServerInterceptor())
                 .build();//building the server
 
         server.start(); //start the server
@@ -45,7 +47,29 @@ public class MainServer
 
         System.out.println("Server started on port " + server.getPort()); //Inform the user the server has started
         server.awaitTermination(); //awaits a shutdown call
+
+
     }
+
+    static class MetadataServerInterceptor implements ServerInterceptor
+    {
+        @Override
+        public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, // Represents the call object for the server-side
+                                                                     Metadata headers, // Contains the metadata received from the client
+                                                                     ServerCallHandler<ReqT, RespT> next)
+        {
+            // Extract custom metadata
+            String userRole = headers.get(Metadata.Key.of("user-role", Metadata.ASCII_STRING_MARSHALLER)); // Retrieves the custom metadata from the headers object
+            System.out.println("Received user-role: " + userRole);
+
+            // Continue processing the call
+            return next.startCall(call, headers); // Starts the next interceptor or the actual server call, passing along the call object and headers
+        }
+    }
+
+
+
+
 }
 
 
