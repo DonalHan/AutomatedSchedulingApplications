@@ -188,18 +188,18 @@ public class ControllerGUI
         @Override
         public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
                 MethodDescriptor<ReqT, RespT> method, // Method descriptor for the gRPC request and responses being called
-                CallOptions callOptions, // Contains details such as deadlines
+                CallOptions callOptions, // Contains details such as deadlines and authority levels, assumable for around security
                 Channel next)
         {
             ClientCall<ReqT, RespT> call = next.newCall(method, callOptions); // Creates a new ClientCall with the method descriptor and call options
 
-            return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(call) // Returns a new instance of SimpleForwardingClientCall
+            return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(call) // Returns a SimpleForwardingClientCall
             {
-                @Override // Indicates the following method overrides a method from a superclass or interface
+                @Override
                 public void start(Listener<RespT> responseListener, Metadata headers)
                 {
-                    headers.put(Metadata.Key.of("user-role", Metadata.ASCII_STRING_MARSHALLER), "admin"); // Adds a custom metadata header to the headers object
-                    super.start(responseListener, headers); // Calls the start method of the superclass to delegate the rest of the work to the original ClientCall
+                    headers.put(Metadata.Key.of("user-role", Metadata.ASCII_STRING_MARSHALLER), "admin"); // Adds a custom metadata header called admin
+                    super.start(responseListener, headers); // populates with header and listener
                 }
             };
         }
